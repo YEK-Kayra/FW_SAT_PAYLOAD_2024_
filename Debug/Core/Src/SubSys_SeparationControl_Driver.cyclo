@@ -1,0 +1,4 @@
+../Core/Src/SubSys_SeparationControl_Driver.c:9:6:SepSys_Init	1
+../Core/Src/SubSys_SeparationControl_Driver.c:24:6:SepSys_Servo_MoveTo	1
+../Core/Src/SubSys_SeparationControl_Driver.c:32:6:SepSys_UnlockMech	1
+../Core/Src/SubSys_SeparationControl_Driver.c:39:6:SepSys_lockMech	1

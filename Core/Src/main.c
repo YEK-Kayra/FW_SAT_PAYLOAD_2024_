@@ -55,6 +55,7 @@
 #include "SubSys_Sensor_GPS_Driver.h"
 #include "SubSys_WirelessCommunication_Setting_Driver.h"
 #include "SubSys_WirelessCommunication_Telemetry_Driver.h"
+#include "SubSys_Actuator_Servo_Driver.h"
 
 #include "SubSys_Sensor_IMU_APP_Driver.h"
 #include "SubSys_Sensor_IMU_STM32_Driver.h"
@@ -97,6 +98,7 @@ I2C_HandleTypeDef hi2c3;
 
 SD_HandleTypeDef hsd;
 DMA_HandleTypeDef hdma_sdio_rx;
+DMA_HandleTypeDef hdma_sdio_tx;
 
 TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
@@ -152,6 +154,16 @@ UART_HandleTypeDef huart2;
 	float euler_roll;
 	float euler_pitch;
 	float euler_yaw;
+
+
+	/**!
+	 * We will create two objects: one for the separation system and one for the color filtering system.
+	 */
+	Actuator_Servo_HandleTypeDef dev_Servo_Separation;
+	Actuator_Servo_HandleTypeDef dev_Servo_ColorFilter;
+	 __IO uint32_t CCR1;
+	 __IO uint32_t CCR2;
+
 /*
 	 ===============================================================================
 						  ##### SINGLE VARIABLE #####
@@ -161,6 +173,7 @@ UART_HandleTypeDef huart2;
 	 * All system units will be work together at 1Hz
 	 */
 	uint32_t SystemTick;
+
 
 	/**
 	 * USB-TTL variables, collected datas are sent to Station PC
@@ -255,7 +268,7 @@ int main(void)
 
 
   /******>>> ALERT CONTROL INITIALIZATION BEGIN >>>******/
-	#ifdef SAT_PAYLOAD_SUBSYS_DRIVER_ALERTCONTROL_H
+	#ifdef SAT_PAYLOAD_SUBSYS_DRIVER_ALERTCONTROL_H__CLOSED
 	/**!
 	 * @Attention!
 	 *
@@ -275,7 +288,7 @@ int main(void)
 
 
   /******>>> SD CARD INITIALIZATION BEGIN >>>******/
-	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SDCARD_H
+	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SDCARD_Hk
 	/*! We create a buffer that contains the satellite's carrier variables, and we fill it with variables from SD_Data objects */
 	extern char SdDatasBuf[LineSize];
 
@@ -291,7 +304,7 @@ int main(void)
 	 * @Attention!   : If you use lowercase letters, this function will reverse the name to uppercase letters as given below
 	 * 					(e.g)CAR_Raw ==> CAR_RAW
 	 */
-	SD_Create_Dir_File("SAT_PAYLOAD", "SAT_PAYLOAD/STM32.TXT", SdDatasBuf);
+	SD_Create_Dir_File("SAT_CAR", "SAT_CAR/STM32.TXT", SdDatasBuf);
 	#endif
   /******<<< SD CARD INITIALIZATION END <<<******/
 
@@ -324,7 +337,7 @@ int main(void)
 	 SubSys_WirelessCom_Config_Init(&dev_WirelessComConfig);
 	 #endif
 
-	 #ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_WIRELESSCOMMUNICATION_TELEMETRY_H
+	 #ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_WIRELESSCOMMUNICATION_TELEMETRY_H__CLOSED
 	 /*! Will be filled for your dev that use now*/
 	 dev_WirelessComApp.huartX = &huart1;
 	 dev_WirelessComConfig.Mode_SW = NormalMode; 		/*! UART and wireless channel are open, transparent transmission is on*/
@@ -339,13 +352,51 @@ int main(void)
 
 
   /******>>> SENSOR IMU  INITIALIZATION BEGIN >>>******/
-
-	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_IMU_APP_H
+	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_IMU_APP_H__CLOSED
 	bno055_assignI2C(&hi2c2);
 	bno055_setup();
 	bno055_setOperationModeNDOF();
 	#endif
   /******<<< SENSOR IMU INITIALIZATION END <<<******/
+
+
+	/******>>> SERVO SYSTEM INITIALIZATION BEGIN >>>******/
+#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_ACTUATOR_SERVO_H__CLOSED
+
+	/*! Separation system Servo control parameters*/
+	dev_Servo_Separation.htim_X 		= &htim1;
+	dev_Servo_Separation.tim_channel_in = TIM_CHANNEL_2;
+	dev_Servo_Separation.CCRx			= CCR2;
+
+	/*! Color Filtering system Servo control parameters*/
+	dev_Servo_ColorFilter.htim_X = &htim2;
+	dev_Servo_ColorFilter.tim_channel_in = TIM_CHANNEL_1;
+	dev_Servo_ColorFilter.CCRx = CCR1;
+
+	Actuator_Servo_Init(&dev_Servo_Separation);
+	Actuator_Servo_Init(&dev_Servo_ColorFilter);
+
+#endif
+	/******<<< SERVO SYSTEM INITIALIZATION END <<<******/
+
+
+	/******>>> SEPARATION CONTROL INITIALIZATION BEGIN >>>******/
+
+	/******<<< SEPARATION CONTROL INITIALIZATION END <<<******/
+
+
+	/******>>> COLOR FILTER CONTROL INITIALIZATION BEGIN >>>******/
+
+	/******<<< COLOR FILTER CONTROL INITIALIZATION END <<<******/
+
+
+	/******>>> RTC SYSTEM INITIALIZATION BEGIN >>>******/
+
+	/******<<< RTC SYSTEML INITIALIZATION END <<<******/
+
+
+
+
 
 
   /* USER CODE END 2 */
@@ -371,10 +422,10 @@ int main(void)
 		MS5611_Read_ActVal(&MS5611);
 
 		/*! The collected data is stored into variables that created for the SD card */
-		SD_FillVariables();
+		//SD_FillVariables();
 
 		/*! The recorded variables are written to the SD card */
-		SD_Write(SdDatasBuf, "SAT_PAYLOAD/STM32.TXT");
+		//SD_Write(SdDatasBuf, "SAT_CAR/STM32.TXT");
 
 
 			/*! This block is used to send the collected data to the Station PC using USB-TTL */
@@ -389,7 +440,7 @@ int main(void)
 
 
 	    /*! Transfer all necessary datas from Carrier to Payload of Satellite*/
-	    SubSys_WirelessCom_Telemetry_Transfer_From_To(Sat_Carrier, Sat_Payload, &dev_WirelessComApp);
+	    //SubSys_WirelessCom_Telemetry_Transfer_From_To(Sat_Carrier, Sat_Payload, &dev_WirelessComApp);
 
 		/*! The system time is retrieved again and the loop waits until the elapsed time reaches 1000 milliseconds*/
 		HAL_Delay(abs(1000 - (HAL_GetTick() - SystemTick)));
@@ -651,9 +702,9 @@ static void MX_TIM1_Init(void)
 
   /* USER CODE END TIM1_Init 1 */
   htim1.Instance = TIM1;
-  htim1.Init.Prescaler = 14400-1;
+  htim1.Init.Prescaler = 1440-1;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 100-1;
+  htim1.Init.Period = 1000-1;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
   htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -715,9 +766,9 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 14400-1;
+  htim2.Init.Prescaler = 1440-1;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 100;
+  htim2.Init.Period = 1000-1;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_PWM_Init(&htim2) != HAL_OK)
@@ -764,7 +815,7 @@ static void MX_TIM3_Init(void)
 
   /* USER CODE END TIM3_Init 1 */
   htim3.Instance = TIM3;
-  htim3.Init.Prescaler = 264-1;
+  htim3.Init.Prescaler = 263-1;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim3.Init.Period = 100-1;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -873,6 +924,9 @@ static void MX_DMA_Init(void)
   /* DMA2_Stream3_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA2_Stream3_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA2_Stream3_IRQn);
+  /* DMA2_Stream6_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA2_Stream6_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA2_Stream6_IRQn);
 
 }
 

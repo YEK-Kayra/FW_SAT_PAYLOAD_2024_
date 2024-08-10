@@ -30,7 +30,7 @@ float ReadBatteryVoltage(ADC_HandleTypeDef *hadc){
    {
 
       Value_ADC = HAL_ADC_GetValue(hadc);
-      BatteryVoltage = (Value_ADC * (ConstantOfReferanceVoltage / ResolationValueOfBits)  *  ConstantOfVoltage) + 1;
+      BatteryVoltage = (Value_ADC * (ConstantOfReferanceVoltage / ResolationValueOfBits)  *  ConstantOfVoltage);
 
          if(BatteryVoltage <= MinLimitVoltage)
          {

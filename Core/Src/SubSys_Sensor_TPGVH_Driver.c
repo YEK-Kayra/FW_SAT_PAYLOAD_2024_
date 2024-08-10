@@ -95,9 +95,11 @@ void MS5611_Get_CalibCoeff(MS5611_HandleTypeDef *dev){
 	uint8_t cnt = 0;
 
 
+
 	for(cnt = 0; cnt <= 6 ; cnt++){
 
 		HAL_I2C_Master_Transmit(dev->i2c, dev->I2C_ADDRESS, &CalibCoefAddrss[cnt], 1, 1000);
+
 
 				for(int cnt_2 = 0; cnt_2 <= 1 ; cnt_2++){
 
