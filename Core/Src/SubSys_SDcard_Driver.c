@@ -14,7 +14,7 @@ FIL FilePage;   	 /* SD card page that is stored in the directory */
 FRESULT SD_result;   /* File function return code */
 
 /* SD CARD TOP FRAME */
-char* DataTopFrame = "CAR_PacketNo, CAR_Pressure, CAR_Temperature, CAR_VertHeight, CAR_VertSpeed, CAR_gForce, CAR_Latitude, CAR_Longitude, CAR_Altitude, CAR_Voltage ";
+char* DataTopFrame = "PAY_PacketNo|PAY_SAT_Status|PAY_ErrorCode|PAY_Date&Time|PAY_Pressure|CAR_Pressure|PAY_Height|CAR_Height|PAY_DiffHeight|PAY_VertSpeed|PAY_Temparature|PAY_Voltage|PAY_gpsLatitude|PAY_gpsLongitude|PAY_gpsAltitude|PAY_Pitch|PAY_Roll|PAY_Yaw|PAY_RHRH|Station_IOTdata|TeamNo  ";
 
 /* We create an object that keeps different satellite variable */
 SD_Datas_HandleTypeDef SD_Data;
@@ -27,9 +27,6 @@ extern float  MS5611_Press;		/*! Pressure data variable 			*/
 extern float  MS5611_Temp;		/*! Temperature data variable 		*/
 extern float  MS5611_Altitude;	/*! Vertical Altitude data variable */
 extern float  MS5611_VertSpeed; /*! Vertical Speed data variable    */
-extern float  MS5611_VertAcc;	/*! Vertical Acceleration variable  */
-extern float  MS5611_gForce;	/*! Vertical g force data variable  */
-extern float  SatCar_Mass;		/*! Total mass of Satellites Carrier module */
 
 extern float GPS_Altitude;				/*! Vertical distance info of satellite beetween */
 extern float GPS_Longitude;				/*! Location info of satellite on the earth 	 */
@@ -37,31 +34,82 @@ extern float GPS_Latitude;				/*! Location info of satellite on the earth 	 */
 
 extern float BatteryVoltage;
 
+extern float euler_roll;
+extern float euler_pitch;
+extern float euler_yaw;
+
+extern uint32_t NumberOfTelePacket;
+extern uint8_t SatelliteStatus;
+extern uint8_t SatelliteErrorCode;
+
+extern uint8_t date ;
+extern uint8_t month;
+extern uint16_t year ;
+extern uint8_t hour ;
+extern uint8_t minute;
+extern uint8_t second ;
+
+extern uint32_t Race_TeamNo;
+
+
 
 void SD_FillVariables(void){
 
-    	SD_Data.Carr_Pressure 	 = MS5611_Press;  // there will be "MS5611_Press" instead of "101325.12"
-    	SD_Data.Carr_Temperature = MS5611_Temp;
-    	SD_Data.Carr_VertHeight  = MS5611_Altitude;
-    	SD_Data.Carr_VertSpeed 	 =  MS5611_VertSpeed;
 
-    	SD_Data.Carr_GPS_Latitude  = GPS_Latitude;
-    	SD_Data.Carr_GPS_Longitude = GPS_Longitude;
-    	SD_Data.Carr_GPS_Altitude  = GPS_Altitude;
+		SD_Data.PAY_PacketNo 	= NumberOfTelePacket;
+		SD_Data.PAY_SAT_Status  = SatelliteStatus;
+		SD_Data.PAY_ErrorCode   = SatelliteErrorCode;
 
-    	SD_Data.Carr_gForce		   = MS5611_gForce;
-    	SD_Data.Carr_Voltage   	   = BatteryVoltage;
-    	SD_Data.Carr_PacketNO 	  += 1;
+		SD_Data.PAY_DateTime[0] = date;
+		SD_Data.PAY_DateTime[1] = month;
+		SD_Data.PAY_DateTime[2] = year;
+		SD_Data.PAY_DateTime[3] = hour;
+		SD_Data.PAY_DateTime[4] = minute;
+		SD_Data.PAY_DateTime[5] = second;
 
-    	sprintf(SdDatasBuf,"<%d>, <%.2f>, <%.2f>, <%.2f>, <%.2f>, <%.2f>, <%.2f>, <%.2f>, <%.2f>, <%.2f>\n",
-																											 SD_Data.Carr_PacketNO     ,SD_Data.Carr_Pressure	,
-																											 SD_Data.Carr_Temperature  ,SD_Data.Carr_VertHeight  ,
-																											 SD_Data.Carr_VertSpeed    ,SD_Data.Carr_gForce		,
-																											 SD_Data.Carr_GPS_Latitude ,SD_Data.Carr_GPS_Longitude,
-																											 SD_Data.Carr_GPS_Altitude ,SD_Data.Carr_Voltage);
+		SD_Data.PAY_Pressure 	= MS5611_Press;
+		SD_Data.CAR_Pressure;
+		SD_Data.PAY_Height 		= MS5611_Altitude;
+		SD_Data.CAR_Height;
+		SD_Data.PAY2CAR_DiffHeight = (SD_Data.PAY_Height-SD_Data.CAR_Height);
+
+		SD_Data.PAY_VertSpeed 	= MS5611_VertSpeed;
+		SD_Data.PAY_Temparature = MS5611_Temp;
+		SD_Data.PAY_Voltage 	= BatteryVoltage;
+
+		SD_Data.PAY_GPS_Latitude  = GPS_Latitude;
+		SD_Data.PAY_GPS_Longitude = GPS_Longitude;
+		SD_Data.PAY_GPS_Altitude  = GPS_Altitude;
+
+		SD_Data.PAY_Pitch = euler_pitch;
+		SD_Data.PAY_Roll  = euler_roll;
+		SD_Data.PAY_Yaw   = euler_yaw;
+
+		SD_Data.PAY_RHRH[0];
+		SD_Data.PAY_RHRH[1];
+		SD_Data.PAY_RHRH[2];
+		SD_Data.PAY_RHRH[3];
+
+		SD_Data.Station_IOTdata;
+		SD_Data.TeamNo = Race_TeamNo;
 
 
-
+    	sprintf(SdDatasBuf,"<%d>, <%d>, <%d>, <%d>, <%d>, <%d>, <%d>, <%d>, <%d>, <%.2f>, <%.2f>, <%.2f>, <%.2f>, <%.2f>, <%.2f>, <%.2f>, <%.2f>, <%.6f>,<%.6f>,<%.2f>, <%.2f>,<%.2f>,<%.2f>, <%c,%c,%c,%c>, <%.2f>, <%d>,\n",
+																					SD_Data.PAY_PacketNo     ,SD_Data.PAY_SAT_Status   ,
+																					SD_Data.PAY_ErrorCode  	 ,SD_Data.PAY_DateTime[0]  ,
+																					SD_Data.PAY_DateTime[1]  ,SD_Data.PAY_DateTime[2]  ,
+																					SD_Data.PAY_DateTime[3]  ,SD_Data.PAY_DateTime[4]  ,
+																					SD_Data.PAY_DateTime[5]  ,SD_Data.PAY_Pressure	   ,
+																					SD_Data.CAR_Pressure   	 ,SD_Data.PAY_Height	   ,
+																					SD_Data.CAR_Height	 	 ,SD_Data.PAY2CAR_DiffHeight,
+																					SD_Data.PAY_VertSpeed  	 ,SD_Data.PAY_Temparature   ,
+																					SD_Data.PAY_Voltage	 	 ,SD_Data.PAY_GPS_Latitude  ,
+																					SD_Data.PAY_GPS_Longitude,SD_Data.PAY_GPS_Altitude ,
+																					SD_Data.PAY_Pitch		 ,SD_Data.PAY_Roll		   ,
+																					SD_Data.PAY_Yaw			 ,SD_Data.PAY_RHRH[0]	   ,
+																					SD_Data.PAY_RHRH[1]	 	 ,SD_Data.PAY_RHRH[2]	   ,
+																					SD_Data.PAY_RHRH[3]	 	 ,SD_Data.Station_IOTdata  ,
+																					SD_Data.TeamNo);
 
 }
 

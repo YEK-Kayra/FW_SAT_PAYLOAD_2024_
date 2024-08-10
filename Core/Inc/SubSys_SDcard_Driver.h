@@ -26,14 +26,15 @@
 /******************************************************************************
          			#### SD CARD OPERATIONS DEFINITIONS ####
 ******************************************************************************/
-#define LineSize 120 /*SD_Datas_HandleTypeDef struct's total byte*/
-
+#define LineSize 120 						/*SD_Datas_HandleTypeDef struct's total byte*/
+#define SAT_PAYLOAD_SD_STRUCT_HEADERGUARD	/*Eneable or disable Satellite carrier's variable*/
 
 /******************************************************************************
          			#### SD CARD OPERATIONS STRUCTURES ####
 ******************************************************************************/
 typedef struct{
 
+#ifndef SAT_PAYLOAD_SD_STRUCT_HEADERGUARD
 float Carr_Pressure;			/* Unit : pascal 		(11Byte) e.g => "101325.12" */
 float Carr_VertSpeed;			/* Unit : meter/second	(6Byte) e.g  => "200.12" 	*/
 float Carr_VertHeight;			/* Unit : meter 		(4Byte) e.g  => "223.4"		*/
@@ -48,6 +49,34 @@ float Carr_GPS_Altitude;		/* Unit : degrees (°) (10Byte) e.g => "30.1585941" 0m
 float Carr_gForce;				/* Unit : newton(F)   (5Byte)  e.g => "49.76Newton"					*/
 
 uint16_t Carr_PacketNO;		    /* Unit : Number (2Byte) e.g => "1265"  							*/
+#endif
+
+uint32_t PAY_PacketNo;		    /* Unit : Number (2Byte) e.g => "1265"  							*/
+uint8_t  PAY_SAT_Status;		/* Unit : Number (1Byte) e.g => "1,2,3,4,5"  						*/
+uint8_t PAY_ErrorCode;			/* Unit : Number (1Byte) e.g => "12"  								*/
+uint16_t PAY_DateTime[6];		/* Unit : Number (12Byte) e.g => "12/02/2001,13/22/17"  			*/
+
+float PAY_Pressure;				/* Unit : pascal 		(11Byte) e.g => "101325.12" */
+float CAR_Pressure;				/* Unit : pascal 		(11Byte) e.g => "101325.12" */
+float PAY_Height;				/* Unit : meter 		(6Byte) e.g  => "223.4, 1023.7"		  		*/
+float CAR_Height;				/* Unit : meter 		(6Byte) e.g  => "223.4, 1023.7"		  		*/
+float PAY2CAR_DiffHeight;		/* Unit : meter 		(6Byte) e.g  => "223.4, 1023.7"		  		*/
+float PAY_VertSpeed;			/* Unit : meter/second	(6Byte) e.g  => "200.12" 					*/
+float PAY_Temparature;			/* Unit : °celcius 		(5Byte) e.g  => "32.78"						*/
+float PAY_Voltage;				/* Unit : Voltage 		(4Byte) e.g => "8.42"						*/
+
+float PAY_GPS_Latitude;			/* Unit : meter		  (10Byte) e.g => "57.912109" -90° to +90°      */
+float PAY_GPS_Longitude;		/* Unit : degrees (°) (10Byte) e.g => "78.0203478" -90° to +90°	    */
+float PAY_GPS_Altitude;			/* Unit : degrees (°) (10Byte) e.g => "30.1585941" 0m to 9000meter  */
+
+float PAY_Pitch;				/* Unit: degrees(°)		(7Byte) e.g => "±112.54" 	*/
+float PAY_Roll;					/* Unit: degrees(°)		(7Byte) e.g => "±112.54" 	*/
+float PAY_Yaw;					/* Unit: degrees(°)		(7Byte) e.g => "±112.54" 	*/
+
+char PAY_RHRH[4];				/* Unit: Character		(4Byte) e.g => "7G3R" 		*/
+float Station_IOTdata;			/* Unit : °celcius 		(5Byte) e.g  => "32.78"						*/
+
+uint32_t TeamNo; 				/* Unit : Number (4Byte) e.g => "270061"  							*/
 
 }SD_Datas_HandleTypeDef;
 

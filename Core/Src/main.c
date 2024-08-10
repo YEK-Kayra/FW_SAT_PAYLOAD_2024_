@@ -59,6 +59,9 @@
 
 #include "SubSys_Sensor_IMU_APP_Driver.h"
 #include "SubSys_Sensor_IMU_STM32_Driver.h"
+#include "SubSys_Sensor_RTC_Driver.h"
+
+
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -155,6 +158,22 @@ UART_HandleTypeDef huart2;
 	float euler_pitch;
 	float euler_yaw;
 
+	/**!
+	 * SubSys_Sensor_RTC_Driver variables
+	 */
+	uint8_t date ;
+	uint8_t month;
+	uint16_t year ;
+	uint8_t hour ;
+	uint8_t minute;
+	uint8_t second ;
+
+	/**
+	 * USB-TTL variables, collected datas are sent to Station PC
+	 * (The code block has been commented out within the while loop)
+	 */
+	uint8_t TelemetryData[100] = { 0 };
+	uint8_t WrittenBytes;
 
 	/**!
 	 * We will create two objects: one for the separation system and one for the color filtering system.
@@ -169,18 +188,34 @@ UART_HandleTypeDef huart2;
 						  ##### SINGLE VARIABLE #####
 	 ===============================================================================
 */
-	/**
-	 * All system units will be work together at 1Hz
-	 */
-	uint32_t SystemTick;
 
+	uint32_t SystemTick;   				 /*! All system units will be work together at 1Hz*/
 
 	/**
-	 * USB-TTL variables, collected datas are sent to Station PC
-	 * (The code block has been commented out within the while loop)
+	 * 0: Ready for Launch (Before Rocket Ignition)
+	 * 1: Ascent
+	 * 2: Model Satellite Descent
+	 * 3: Separation
+	 * 4: Payload Descent
+	 * 5: Recovery (Payload Ground Contact)
 	 */
-	uint8_t TelemetryData[100] = { 0 };
-	uint8_t WrittenBytes;
+	uint8_t SatelliteStatus;
+
+	/**
+	 * Releated byte will be ==> xxxx xxxx
+	 * index:
+	 * 	 	 0-> Satt. velocity is not range of 12-14 m/s.
+	 * 		 1-> Payload velocity is not range of 6-8 m/s.
+	 * 		 2-> Unable to get carrier pressure
+	 * 		 3-> Unable to get payload location
+	 * 		 4-> Autonomous separation did not occur
+	 */
+	uint8_t SatelliteErrorCode;
+
+	uint32_t NumberOfTelePacket;		 /*! The value is incremented by +1 at the end of each satellite operation period */
+
+	const uint32_t Race_TeamNo = 270061; /*! It is a fixed number provided by the competition organization.*/
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -250,7 +285,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   /******>>> SENSOR BATTERY INIT BEGIN >>>******/
-  	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_BATTERY_H
+  	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_BATTERY_H__CLOSED
   	NumSerialBat = 2;	/*! Number of serial connection battery */
   	MeasBattery_Init(NumSerialBat);
   	#endif
@@ -258,7 +293,7 @@ int main(void)
 
 
   /******>>> SENSOR TPGVH INITIALIZATION BEGIN >>>******/
-  	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_TPGVH_H
+  	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_TPGVH_H__CLOSED
   	MS5611.I2C_ADDRESS = MS5611_I2C_ADDRESS_H;
   	MS5611.i2c = &hi2c1;
   	MS5611.Ref_Alt_Sel = 'm';
@@ -288,7 +323,7 @@ int main(void)
 
 
   /******>>> SD CARD INITIALIZATION BEGIN >>>******/
-	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SDCARD_Hk
+	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SDCARD_H__CLOSED
 	/*! We create a buffer that contains the satellite's carrier variables, and we fill it with variables from SD_Data objects */
 	extern char SdDatasBuf[LineSize];
 
@@ -379,6 +414,24 @@ int main(void)
 #endif
 	/******<<< SERVO SYSTEM INITIALIZATION END <<<******/
 
+	/******>>> RTC SYSTEM INITIALIZATION BEGIN >>>******/
+	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_RTC_H__CLOSED
+
+	DS1307_Init(&hi2c3);	/*! Config i2c terminal and start the RTC */
+
+	/*! The code block required to set the date and time.*/
+	#ifdef SAT_PAYLOAD_RTC_CONFIG_PERMISSION_HEADERGUARD
+	DS1307_SetTimeZone(+3, 00);
+	DS1307_SetDate(5);
+	DS1307_SetMonth(7);
+	DS1307_SetYear(2024);
+	DS1307_SetHour(0);
+	DS1307_SetMinute(0);
+	DS1307_SetSecond(0);
+	#endif
+
+	#endif
+	/******<<< RTC SYSTEML INITIALIZATION END <<<******/
 
 	/******>>> SEPARATION CONTROL INITIALIZATION BEGIN >>>******/
 
@@ -388,14 +441,6 @@ int main(void)
 	/******>>> COLOR FILTER CONTROL INITIALIZATION BEGIN >>>******/
 
 	/******<<< COLOR FILTER CONTROL INITIALIZATION END <<<******/
-
-
-	/******>>> RTC SYSTEM INITIALIZATION BEGIN >>>******/
-
-	/******<<< RTC SYSTEML INITIALIZATION END <<<******/
-
-
-
 
 
 
@@ -410,7 +455,7 @@ int main(void)
 		SystemTick = HAL_GetTick();
 
 		/*! It reads the battery voltage and stores it */
-		ReadBatteryVoltage(&hadc1);
+		//ReadBatteryVoltage(&hadc1);
 
 		/*! It reads the TPGVH data and saves it into the variables created in the system
 		 * (T) = Temperature
@@ -419,7 +464,7 @@ int main(void)
 		 * (V) = Vertical Speed
 		 * (H) = Vertical Height
 		 **/
-		MS5611_Read_ActVal(&MS5611);
+		//MS5611_Read_ActVal(&MS5611);
 
 		/*! The collected data is stored into variables that created for the SD card */
 		//SD_FillVariables();
@@ -441,6 +486,10 @@ int main(void)
 
 	    /*! Transfer all necessary datas from Carrier to Payload of Satellite*/
 	    //SubSys_WirelessCom_Telemetry_Transfer_From_To(Sat_Carrier, Sat_Payload, &dev_WirelessComApp);
+
+
+		/*! Get current Date & Time */
+		//DS1307_GetAllDatas();
 
 		/*! The system time is retrieved again and the loop waits until the elapsed time reaches 1000 milliseconds*/
 		HAL_Delay(abs(1000 - (HAL_GetTick() - SystemTick)));
