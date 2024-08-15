@@ -19,7 +19,7 @@ char* DataTopFrame = "PAY_PacketNo|PAY_SAT_Status|PAY_ErrorCode|PAY_Date&Time|PA
 /* We create an object that keeps different satellite variable */
 SD_Datas_HandleTypeDef SD_Data;
 
-//We create a buffer that contains satellite's carrier variables. We fill it by SD_Data objects variables
+/*! We create a buffer that contains the satellite's carrier variables, and we fill it with variables from SD_Data objects */
 char* SdDatasBuf[LineSize];
 
 extern I2C_HandleTypeDef hi2c1;
@@ -149,7 +149,7 @@ FRESULT SD_Create_Dir_File(const TCHAR* SD_Dir,const TCHAR* SD_FileName,char* SD
 		SD_result = f_close(&FilePage);
 
 		sprintf(SD_Buffer,"%s\n",DataTopFrame);
-		SD_Write(SD_Buffer,"SAT_CAR/STM32.TXT");
+		SD_Write(SD_Buffer,"SAT_PAY/STM32.TXT");
 
 		if(SD_result != FR_OK){
 				/**

@@ -1,6 +1,6 @@
 ../Core/Src/SubSys_ARAS.c:11:6:ARAS_CheckSystem	1
 ../Core/Src/SubSys_ARAS.c:41:6:SubSys_ArasCntrl_Sat_LandingSpeed	5
-../Core/Src/SubSys_ARAS.c:58:6:SubSys_ArasCntrl_Payload_LandingSpeed	3
-../Core/Src/SubSys_ARAS.c:71:6:SubSys_ArasCntrl_Carr_Pressure	3
-../Core/Src/SubSys_ARAS.c:85:6:SubSys_ArasCntrl_Payload_LocationData	2
-../Core/Src/SubSys_ARAS.c:96:6:SubSys_ArasCntrl_Sat_SeperationCheck	1
+../Core/Src/SubSys_ARAS.c:59:6:SubSys_ArasCntrl_Payload_LandingSpeed	3
+../Core/Src/SubSys_ARAS.c:72:6:SubSys_ArasCntrl_Carr_Pressure	3
+../Core/Src/SubSys_ARAS.c:86:6:SubSys_ArasCntrl_Payload_LocationData	4
+../Core/Src/SubSys_ARAS.c:100:6:SubSys_ArasCntrl_Sat_SeperationCheck	2

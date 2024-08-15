@@ -31,10 +31,10 @@ uint16_t Written_Bytes; /* is for save number of total converted buffer's charac
 void SubSys_WirelessCom_Telemetry_Transfer_From_To(MissionUnit From_X, MissionUnit To_Y, SubSys_WirelessCom_APP_HandleTypeDef *dev_WirelessComApp){
 
 	/*! Use it when working on Sat_Carrier flight software*/
-	if(From_X == Sat_Carrier && To_Y == Sat_Payload){
+	if(From_X == Sat_Payload && To_Y == GroundStation){
 
 		/*! Create message packet for Carrier for sending to the Payload*/
-		SubSys_WirelessCom_Telemetry_Create_Packet_For(Sat_Carrier, dev_WirelessComApp);
+		SubSys_WirelessCom_Telemetry_Create_Packet_For(Sat_Payload, dev_WirelessComApp);
 
 				/* 8 pairs of '<>' and y Byte data are x Byte as total budget*/
 				Written_Bytes = sprintf(dev_WirelessComApp->Buffer.Temp,
@@ -77,7 +77,7 @@ void SubSys_WirelessCom_Telemetry_Transfer_From_To(MissionUnit From_X, MissionUn
 void SubSys_WirelessCom_Telemetry_Create_Packet_For(MissionUnit x,SubSys_WirelessCom_APP_HandleTypeDef *dev_WirelessComApp){
 
 	switch(x){
-		case Sat_Carrier :
+		case Sat_Payload :
 
 			/*-------------TARGET DEVICE ADDRESS AND CHANNEL INFO----------------*/
 			/*! Target device will be Satellite's Payload*/

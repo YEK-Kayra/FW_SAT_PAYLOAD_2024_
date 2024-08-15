@@ -20,8 +20,8 @@
   *		--> UART_HandleTypeDef huart2; 	 ==> It relates to the 	"SubSys_WirelessCommunication_Setting_Driver" & "SubSys_WirelessCommunication_Telemetry_Driver"
   *
   *		--> TIM_HandleTypeDef htim1;  	 ==> It relates to the 	"SubSys_SeparationControl_Driver" 	& [(TIM_CHANNEL_2)]
-  *		--> TIM_HandleTypeDef htim2;  	 ==> It relates to the 	"SubSys_ColorFilterControl_Driver" 	& [(TIM_CHANNEL_1)]
-  *		--> TIM_HandleTypeDef htim3;  	 ==> It relates to the 	"SubSys_AlertControl_Driver" 		& [(TIM_CHANNEL_1)]
+  *		--> TIM_HandleTypeDef htim2;  	 ==> It relates to the 	"SubSys_ColorFilterControl_Driver" 	& [(TIM_CHANNEL_1)](Succes)
+  *		--> TIM_HandleTypeDef htim3;  	 ==> It relates to the 	"SubSys_AlertControl_Driver" 		& [(TIM_CHANNEL_1)](Succes)
   *
   *		--> GPIO_TypeDef |PORT->B| -> |GPIO_PIN_13|			    ==>  (CAMERA SWITCH PIN)
   *
@@ -39,6 +39,8 @@
   *		##Clean Code explanation
   *		"The __CLOSED expression can be written at the end of the header guard.
   *		 If you remove this part, the related code will work and complied
+  *
+  *		 "The __notSuccessful , related part of the code didn't work or test
   ******************************************************************************
   */
 /* USER CODE END Header */
@@ -55,13 +57,18 @@
 #include "SubSys_Sensor_GPS_Driver.h"
 #include "SubSys_WirelessCommunication_Setting_Driver.h"
 #include "SubSys_WirelessCommunication_Telemetry_Driver.h"
+#include "SubSys_ARAS.h"
+#include "SubSys_Sensor_RTC_Driver.h"
+
 #include "SubSys_Actuator_Servo_Driver.h"
+#include "SubSys_ColorFilterControl_Driver.h"
+#include "SubSys_SeparationControl_Driver.h"
 
 #include "SubSys_Sensor_IMU_APP_Driver.h"
 #include "SubSys_Sensor_IMU_STM32_Driver.h"
-#include "SubSys_Sensor_RTC_Driver.h"
 
-
+#include "SubSys_Payload_FlightStatus.h"
+#include "SubSys_Payload_PeriodicReattempt.h"
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -153,7 +160,7 @@ UART_HandleTypeDef huart2;
 	/**!
 	 * SubSys_Sensor_IMU_APP_Driver variables
 	 */
-	bno055_vector_t v;
+	bno055_vector_t vectorIMU;
 	float euler_roll;
 	float euler_pitch;
 	float euler_yaw;
@@ -180,8 +187,6 @@ UART_HandleTypeDef huart2;
 	 */
 	Actuator_Servo_HandleTypeDef dev_Servo_Separation;
 	Actuator_Servo_HandleTypeDef dev_Servo_ColorFilter;
-	 __IO uint32_t CCR1;
-	 __IO uint32_t CCR2;
 
 /*
 	 ===============================================================================
@@ -199,7 +204,7 @@ UART_HandleTypeDef huart2;
 	 * 4: Payload Descent
 	 * 5: Recovery (Payload Ground Contact)
 	 */
-	uint8_t SatelliteStatus;
+	uint8_t SatelliteStatus = ReadyForLaunch;	/*! First step at the beginnig */
 
 	/**
 	 * Releated byte will be ==> xxxx xxxx
@@ -212,7 +217,8 @@ UART_HandleTypeDef huart2;
 	 */
 	uint8_t SatelliteErrorCode;
 
-	uint32_t NumberOfTelePacket;		 /*! The value is incremented by +1 at the end of each satellite operation period */
+	uint8_t AutonomoSeparationStatus = Permission_NOT;	 /*! if the value is 0 that means there is no separation permission else permission is OK*/
+	uint32_t NumberOfTelePacket = 0;		 			 /*! The value is incremented by +1 at the end of each satellite operation period */
 
 	const uint32_t Race_TeamNo = 270061; /*! It is a fixed number provided by the competition organization.*/
 
@@ -323,8 +329,8 @@ int main(void)
 
 
   /******>>> SD CARD INITIALIZATION BEGIN >>>******/
-	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SDCARD_H__CLOSED
-	/*! We create a buffer that contains the satellite's carrier variables, and we fill it with variables from SD_Data objects */
+	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SDCARD_H
+	/*! We create a buffer that contains the satellite's variables, and we fill it with variables from SD_Data objects */
 	extern char SdDatasBuf[LineSize];
 
 	/*!(@warning)	Don't write "E:" , "e:",  "e\" */
@@ -345,7 +351,7 @@ int main(void)
 
 
   /******>>> SENSOR GPS INITIALIZATION BEGIN >>>******/
-	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_GPS_H
+	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_GPS_H__CLOSED
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_SET);
 	GPS_Init();
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_RESET);
@@ -363,7 +369,7 @@ int main(void)
 	 *		  come after channel info
 	 */
 	 #ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_WIRELESSCOMMUNICATION_SETTING_H__CLOSED
-	 dev_WirelessComConfig.interface.huart = &huart1;
+	 dev_WirelessComConfig.interface.huart = &huart2;
 	 dev_WirelessComConfig.interface.GPIOx = GPIOB;
 	 dev_WirelessComConfig.LORA_PIN_M0= GPIO_PIN_14;
 	 dev_WirelessComConfig.LORA_PIN_M1= GPIO_PIN_13;
@@ -372,13 +378,13 @@ int main(void)
 	 SubSys_WirelessCom_Config_Init(&dev_WirelessComConfig);
 	 #endif
 
-	 #ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_WIRELESSCOMMUNICATION_TELEMETRY_H__CLOSED
+	 #ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_WIRELESSCOMMUNICATION_TELEMETRY_H
 	 /*! Will be filled for your dev that use now*/
-	 dev_WirelessComApp.huartX = &huart1;
+	 dev_WirelessComApp.huartX = &huart2;
 	 dev_WirelessComConfig.Mode_SW = NormalMode; 		/*! UART and wireless channel are open, transparent transmission is on*/
 	 SubSys_WirelessCom_Config_WORK_MODE(&dev_WirelessComConfig);
 
-	 /*! Will be filled for the PAYLOAD(Target) Device */
+	 /*! Will be filled for the Ground Station(Target) Device */
 	 dev_WirelessComApp.Target_ADDH = 0x20;
 	 dev_WirelessComApp.Target_ADDL = 0x23;
 	 dev_WirelessComApp.Target_Ch   = 0x10;
@@ -387,7 +393,9 @@ int main(void)
 
 
   /******>>> SENSOR IMU  INITIALIZATION BEGIN >>>******/
-	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_IMU_APP_H__CLOSED
+	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_IMU_APP_H__notSuccesful
+
+	 //*! BNO055 OR MPU9250 IMU SENSOR WİLL BE USED*//
 	bno055_assignI2C(&hi2c2);
 	bno055_setup();
 	bno055_setOperationModeNDOF();
@@ -396,51 +404,86 @@ int main(void)
 
 
 	/******>>> SERVO SYSTEM INITIALIZATION BEGIN >>>******/
-#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_ACTUATOR_SERVO_H__CLOSED
+#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_ACTUATOR_SERVO_H
 
 	/*! Separation system Servo control parameters*/
 	dev_Servo_Separation.htim_X 		= &htim1;
 	dev_Servo_Separation.tim_channel_in = TIM_CHANNEL_2;
-	dev_Servo_Separation.CCRx			= CCR2;
+	SubSys_Actuator_Servo_Init(&dev_Servo_Separation);
+
+	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_ACTUATOR_SERVO_SEPARATION_TEST_STATUS__CLOSED
+		SubSys_Actuator_Servo_MoveTo(&dev_Servo_Separation, 0);
+		SubSys_Actuator_Servo_MoveTo(&dev_Servo_Separation, 45);
+		SubSys_Actuator_Servo_MoveTo(&dev_Servo_Separation, 90);
+		SubSys_Actuator_Servo_MoveTo(&dev_Servo_Separation, 135);
+		SubSys_Actuator_Servo_MoveTo(&dev_Servo_Separation, 180);
+	#endif
 
 	/*! Color Filtering system Servo control parameters*/
+	/*! Succes */
 	dev_Servo_ColorFilter.htim_X = &htim2;
 	dev_Servo_ColorFilter.tim_channel_in = TIM_CHANNEL_1;
-	dev_Servo_ColorFilter.CCRx = CCR1;
+	SubSys_Actuator_Servo_Init(&dev_Servo_ColorFilter);
 
-	Actuator_Servo_Init(&dev_Servo_Separation);
-	Actuator_Servo_Init(&dev_Servo_ColorFilter);
+	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_ACTUATOR_SERVO_COLORFILTER_TEST_STATUS__CLOSED
+		SubSys_Actuator_Servo_MoveTo(&dev_Servo_ColorFilter, 0);
+		SubSys_Actuator_Servo_MoveTo(&dev_Servo_ColorFilter, 45);
+		SubSys_Actuator_Servo_MoveTo(&dev_Servo_ColorFilter, 90);
+		SubSys_Actuator_Servo_MoveTo(&dev_Servo_ColorFilter, 135);
+		SubSys_Actuator_Servo_MoveTo(&dev_Servo_ColorFilter, 180);
+	#endif
 
 #endif
 	/******<<< SERVO SYSTEM INITIALIZATION END <<<******/
 
+
 	/******>>> RTC SYSTEM INITIALIZATION BEGIN >>>******/
 	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_RTC_H__CLOSED
 
-	DS1307_Init(&hi2c3);	/*! Config i2c terminal and start the RTC */
+		DS1307_Init(&hi2c3);	/*! Config i2c terminal and start the RTC */
 
-	/*! The code block required to set the date and time.*/
-	#ifdef SAT_PAYLOAD_RTC_CONFIG_PERMISSION_HEADERGUARD
-	DS1307_SetTimeZone(+3, 00);
-	DS1307_SetDate(5);
-	DS1307_SetMonth(7);
-	DS1307_SetYear(2024);
-	DS1307_SetHour(0);
-	DS1307_SetMinute(0);
-	DS1307_SetSecond(0);
-	#endif
+		/*! The code block required to set the date and time.*/
+		#ifdef SAT_PAYLOAD_RTC_CONFIG_PERMISSION_HEADERGUARD__CLOSED
+		DS1307_SetTimeZone(+3, 00);
+		DS1307_SetDate(5);
+		DS1307_SetMonth(7);
+		DS1307_SetYear(2024);
+		DS1307_SetHour(21);
+		DS1307_SetMinute(56);
+		DS1307_SetSecond(48);
+		#endif
 
 	#endif
 	/******<<< RTC SYSTEML INITIALIZATION END <<<******/
 
-	/******>>> SEPARATION CONTROL INITIALIZATION BEGIN >>>******/
 
+	/******>>> SEPARATION CONTROL INITIALIZATION BEGIN >>>******/
+	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SEPARATION_CONTROL_H
+		HAL_Delay(5000);
+		SubSys_SeparationMechanism_Lock_PayloadToCarrier();
+	#endif
 	/******<<< SEPARATION CONTROL INITIALIZATION END <<<******/
 
 
 	/******>>> COLOR FILTER CONTROL INITIALIZATION BEGIN >>>******/
+	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_COLORFILTER_CONTROL_H
+		/*! Will be added init code block in here */
+		SubSys_ColorFilterMechanism_TurnTo(Filter_None);
 
+		#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_COLORFILTER_CONTROL_TEST_STATUS__CLOSED
+		SubSys_ColorFilterMechanism_TurnTo(Filter_None);
+		SubSys_ColorFilterMechanism_TurnTo(filter_Red);
+		SubSys_ColorFilterMechanism_TurnTo(filter_Green);
+		SubSys_ColorFilterMechanism_TurnTo(filter_Blue);
+		#endif
+
+	#endif
 	/******<<< COLOR FILTER CONTROL INITIALIZATION END <<<******/
+
+
+	/******>>> CAMERA ACTIVE INITIALIZATION BEGIN >>>******/
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, GPIO_PIN_SET);
+	/******<<< CAMERA ACTIVE INITIALIZATION END <<<******/
 
 
 
@@ -451,50 +494,7 @@ int main(void)
   while (1)
   {
 
-		/*! At the beginning of each loop, the system retrieves the last recorded milliseconds */
-		SystemTick = HAL_GetTick();
-
-		/*! It reads the battery voltage and stores it */
-		//ReadBatteryVoltage(&hadc1);
-
-		/*! It reads the TPGVH data and saves it into the variables created in the system
-		 * (T) = Temperature
-		 * (P) = Pressure
-		 * (G) = G force
-		 * (V) = Vertical Speed
-		 * (H) = Vertical Height
-		 **/
-		//MS5611_Read_ActVal(&MS5611);
-
-		/*! The collected data is stored into variables that created for the SD card */
-		//SD_FillVariables();
-
-		/*! The recorded variables are written to the SD card */
-		//SD_Write(SdDatasBuf, "SAT_CAR/STM32.TXT");
-
-
-			/*! This block is used to send the collected data to the Station PC using USB-TTL */
-		//
-		//				  WrittenBytes = sprintf(TelemetryData,
-		//													  "<%.1f> <%.1f> <%.1f> <%.1f> <%.1f> \n",
-		//																							  BatteryVoltage , MS5611_Press,MS5611_Temp,
-		//																							  MS5611_Altitude, MS5611_VertSpeed,
-		//																							  GPS_Latitude   , GPS_Longitude,
-		//																							  GPS_Altitude);
-		//				  HAL_UART_Transmit(&huart1, TelemetryData, WrittenBytes, 1000);
-
-
-	    /*! Transfer all necessary datas from Carrier to Payload of Satellite*/
-	    //SubSys_WirelessCom_Telemetry_Transfer_From_To(Sat_Carrier, Sat_Payload, &dev_WirelessComApp);
-
-
-		/*! Get current Date & Time */
-		//DS1307_GetAllDatas();
-
-		/*! The system time is retrieved again and the loop waits until the elapsed time reaches 1000 milliseconds*/
-		HAL_Delay(abs(1000 - (HAL_GetTick() - SystemTick)));
-
-
+	 SubSys_SatelliteMission_Continue();
 
     /* USER CODE END WHILE */
 

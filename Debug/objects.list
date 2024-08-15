@@ -2,6 +2,8 @@
 "./Core/Src/SubSys_Actuator_Servo_Driver.o"
 "./Core/Src/SubSys_AlertControl_Driver.o"
 "./Core/Src/SubSys_ColorFilterControl_Driver.o"
+"./Core/Src/SubSys_Payload_FlightStatus.o"
+"./Core/Src/SubSys_Payload_PeriodicReattempt.o"
 "./Core/Src/SubSys_SDcard_Driver.o"
 "./Core/Src/SubSys_Sensor_Battery_Driver.o"
 "./Core/Src/SubSys_Sensor_GPS_Driver.o"

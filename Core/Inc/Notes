@@ -1,0 +1,31 @@
+void SubSys_SatelliteMission_Continue(){
+
+	if( ((-2<=MS5611_VertSpeed) && (MS5611_VertSpeed<=4)) && (SatelliteStatus == 0) ){
+
+		/*! Currently, the model satellite is on the ground
+		 * 	keep going on continue collecting data
+		 */
+		SubSys_Payload_MissionRetryLoop();
+
+	}else{
+		/*! If the condation is not true, that means The model satellite is ascending */
+		SatelliteStatus=1;
+		SubSys_Payload_MissionRetryLoop();
+	}
+
+	if( ((0<=MS5611_VertSpeed) && (MS5611_VertSpeed<=2)) && (SatelliteStatus==1)){
+
+		/*!
+		 * Currently, the model satellite is going up
+		 * keep going on continue collecting data
+		 */
+		SubSys_Payload_MissionRetryLoop();
+
+	}else{
+		SatelliteStatus=2;
+		SubSys_Payload_MissionRetryLoop();
+	}
+
+
+
+}

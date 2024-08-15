@@ -15,17 +15,23 @@
 
 #include "main.h"
 #include "stdio.h"
+#include "stm32f4xx_hal_tim.h"
+
 
 /******************************************************************************
          			#### DEFINITIONS ####
 ******************************************************************************/
 #define ConstantOfReferanceVoltage 3.30
 #define ResolationValueOfBits 4095
+
+
 /******************************************************************************
          			#### EXTERNAL VARIABLES ####
 ******************************************************************************/
 extern float BatteryVoltage;
 extern uint8_t NumSerialBat;
+extern TIM_HandleTypeDef htim3;	/*! Passive Buzzer PWM timer*/
+
 
 /******************************************************************************
          			#### FUNCTIONS ####

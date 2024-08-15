@@ -11,6 +11,8 @@
 
 #include "main.h"
 
+
+
 /**
  * @func  : void Buzz_ON(TIM_HandleTypeDef *htim_X, uint32_t PWM_Channel_X)
  * @brief : Buzzer is set when the function is called(DutyCycle is configurated by the CCRx REG)

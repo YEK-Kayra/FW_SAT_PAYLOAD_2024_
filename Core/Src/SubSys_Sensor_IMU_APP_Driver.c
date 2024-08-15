@@ -10,6 +10,11 @@ uint16_t eulerScale = 16;
 uint16_t magScale = 16;
 uint16_t quaScale = (1<<14);    // 2^14
 
+extern 	bno055_vector_t vectorIMU;
+extern float euler_roll;
+extern float euler_pitch;
+extern float euler_yaw;
+
 void bno055_setPage(uint8_t page) { bno055_writeData(BNO055_PAGE_ID, page); }
 
 bno055_opmode_t bno055_getOperationMode() {
@@ -237,4 +242,12 @@ void bno055_setAxisMap(bno055_axis_map_t axis) {
   uint8_t axisMapSign = (axis.x_sign << 2) | (axis.y_sign << 1) | (axis.z_sign);
   bno055_writeData(BNO055_AXIS_MAP_CONFIG, axisRemap);
   bno055_writeData(BNO055_AXIS_MAP_SIGN, axisMapSign);
+}
+
+
+void IMU_GetEulerVector(){
+	  vectorIMU = bno055_getVectorEuler();
+	  euler_roll = vectorIMU.z;
+	  euler_pitch= vectorIMU.y;
+	  euler_yaw = vectorIMU.x;
 }

@@ -18,6 +18,11 @@ uint8_t Seperation_State;
 
 }Aras_Check_HandleTypeDef;
 
+extern float  MS5611_VertSpeed;			/*! Vertical Speed data variable  			     */
+extern float  GPS_Altitude;				/*! Vertical distance info of satellite beetween */
+extern float  GPS_Longitude;			/*! Location info of satellite on the earth 	 */
+extern float  GPS_Latitude;				/*! Location info of satellite on the earth 	 */
+
 
 void ARAS_CheckSystem();
 

@@ -15,6 +15,8 @@ void  MeasBattery_Init(int NumSerialBat){
 	MinLimitVoltage = 3.5 * NumSerialBat;
 
 }
+
+
 /**
  * @fn float ReadingBatteryVoltage(ADC_HandleTypeDef *hadc)
  * @brief Read value of battery voltage by using ADC
@@ -34,10 +36,8 @@ float ReadBatteryVoltage(ADC_HandleTypeDef *hadc){
 
          if(BatteryVoltage <= MinLimitVoltage)
          {
-
-            //Doing some things like activating alerts or blinking leds
-            //HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_12);
-        	//while(1);
+        	PassiveBuzz_ON(&htim3, TIM_CHANNEL_1);		/*! System voltage level is within the critical range, alert is active */
+        	while(1);
          }
 
    }

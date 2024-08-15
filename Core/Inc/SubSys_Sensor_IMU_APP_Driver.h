@@ -312,6 +312,8 @@ bno055_vector_t bno055_getVectorGravity();
 bno055_vector_t bno055_getVectorQuaternion();
 void bno055_setAxisMap(bno055_axis_map_t axis);
 
+void IMU_GetEulerVector();
+
 #ifdef __cplusplus
   }
 #endif

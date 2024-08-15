@@ -42,7 +42,8 @@ void SubSys_ArasCntrl_Sat_LandingSpeed(void)
 {
 
 
-	if( ((12 <= CheckAras.CARR_LandSpeed) && (CheckAras.CARR_LandSpeed <= 14)) ||
+	if( ((12 <= CheckAras.CARR_LandSpeed) && (CheckAras.CARR_LandSpeed <= 14))
+										  ||
 	    ((12 <= CheckAras.PAYL_LandSpeed) && (CheckAras.PAYL_LandSpeed <= 14)) )
 	{
 		total_err += 0;
