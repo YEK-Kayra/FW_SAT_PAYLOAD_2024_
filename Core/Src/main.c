@@ -199,8 +199,6 @@ UART_HandleTypeDef huart2;
 	 ===============================================================================
 */
 
-	uint32_t SystemTick;   				 /*! All system units will be work together at 1Hz*/
-
 	/**
 	 * 0: Ready for Launch (Before Rocket Ignition)
 	 * 1: Ascent
@@ -224,15 +222,14 @@ UART_HandleTypeDef huart2;
 
 	uint8_t AutonomoSeparationStatus = Permission_NOT;	 /*! if the value is 0 that means there is no separation permission else permission is OK*/
 
+	uint32_t SystemTick;   				 /*! All system units will be work together at 1Hz*/
 	uint32_t NumberOfTelePacket = 0;		 			 /*! The value is incremented by +1 at the end of each satellite operation period */
 
 	const uint32_t Race_TeamNo = 270061; 				 /*! It is a fixed number provided by the competition organization.*/
 
 	float PAY2CAR_DiffHeight = 0;						 /*! Vertical Height value from Satellite payload to carrier unit*/
-
 	float CarrierPressure;								 /*! Carrier Unit's pressure data*/
 	float CarrierVertHeight;							 /*! Carrier Unit's vertical height data*/
-
 	float GroundStation_IOTTemparature;					 /*! IOT mission , gets datas from Ground Station PC */
 
 	char command_RHRH[4];								 /*! Rakam Harf Rakam Harf receiving datas from ground station pc */
@@ -344,7 +341,7 @@ int main(void)
 
 
   /******>>> SD CARD INITIALIZATION BEGIN >>>******/
-	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SDCARD_H
+	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SDCARD_H__CLOSED
 	/*! We create a buffer that contains the satellite's variables, and we fill it with variables from SD_Data objects */
 	extern char SdDatasBuf[LineSize];
 
@@ -403,6 +400,10 @@ int main(void)
 	 dev_WirelessComApp.Target_ADDH = 0x20;
 	 dev_WirelessComApp.Target_ADDL = 0x23;
 	 dev_WirelessComApp.Target_Ch   = 0x10;
+
+	  /*! Interrupt is active for receiving wireless data */
+	  HAL_UART_Receive_IT(dev_WirelessComApp.huartX, dev_WirelessComApp.Buffer.Rx, sizeof(dev_WirelessComApp.Buffer.Rx));
+
 	 #endif
   /******<<< WIRELESS COMMUNICATION SETTING & TELEMETRY INITIALIZATION END <<<******/
 
@@ -419,7 +420,7 @@ int main(void)
 
 
 	/******>>> SERVO SYSTEM INITIALIZATION BEGIN >>>******/
-#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_ACTUATOR_SERVO_H
+#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_ACTUATOR_SERVO_H__CLOSED
 
 	/*! Separation system Servo control parameters*/
 	dev_Servo_Separation.htim_X 		= &htim1;
@@ -455,7 +456,8 @@ int main(void)
 	/******>>> RTC SYSTEM INITIALIZATION BEGIN >>>******/
 	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_RTC_H__CLOSED
 
-		DS1307_Init(&hi2c3);	/*! Config i2c terminal and start the RTC */
+		/*! Config i2c terminal and start the RTC */
+		DS1307_Init(&hi2c3);
 
 		/*! The code block required to set the date and time.*/
 		#ifdef SAT_PAYLOAD_RTC_CONFIG_PERMISSION_HEADERGUARD__CLOSED
@@ -473,7 +475,7 @@ int main(void)
 
 
 	/******>>> SEPARATION CONTROL INITIALIZATION BEGIN >>>******/
-	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SEPARATION_CONTROL_H
+	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SEPARATION_CONTROL_H__CLOSED
 		HAL_Delay(5000);
 		SubSys_SeparationMechanism_Lock_PayloadToCarrier();
 	#endif
@@ -481,7 +483,7 @@ int main(void)
 
 
 	/******>>> COLOR FILTER CONTROL INITIALIZATION BEGIN >>>******/
-	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_COLORFILTER_CONTROL_H
+	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_COLORFILTER_CONTROL_H__CLOSED
 		/*! Will be added init code block in here */
 		SubSys_ColorFilterMechanism_TurnTo(Filter_None);
 

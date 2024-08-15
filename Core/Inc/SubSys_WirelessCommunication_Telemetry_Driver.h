@@ -13,8 +13,8 @@
 ******************************************************************************/
 
 /*! 200 is the number of packets the LoRa module can send in a single transmission */
-#define SizeOf_Wireless_TX_Buff_Carrier 	200
-
+#define SizeOf_Wireless_TX_Buff_PAYLOAD 	200
+#define SizeOf_Wireless_RX_Buff_CARRIER 	50
 /******************************************************************************
          				#### WIRELESSCOM ENUMS ####
 ******************************************************************************/
@@ -30,6 +30,8 @@ typedef enum{
 /******************************************************************************
          				#### WIRELESSCOM EXTERNS ####
 ******************************************************************************/
+extern UART_HandleTypeDef huart2;
+
 extern uint32_t NumberOfTelePacket;	 /*! The value is incremented by +1 at the end of each satellite operation period */
 
 /**
@@ -141,12 +143,13 @@ typedef struct{
 			uint32_t PAY_TeamNumber;
 
 			char PAY_dataRHRH[4];						/* Unit : char(1Byte) e.g => '3','G','7','B' */
+
 }SubSys_WirelessCom_VariableTypeDef;
 
 typedef struct{
-
-	uint8_t Tx[SizeOf_Wireless_TX_Buff_Carrier];	 /*! Buffer for Datas that send to Lora*/
-	char 	Temp[SizeOf_Wireless_TX_Buff_Carrier];
+	uint8_t Tx[SizeOf_Wireless_TX_Buff_PAYLOAD];	 /*! Buffer for Datas that send to Lora 	 */
+	char 	Temp[SizeOf_Wireless_TX_Buff_PAYLOAD];	 /*! Buffer for Datas that send to Lora		 */
+	char 	Rx[SizeOf_Wireless_RX_Buff_CARRIER];	 /*! Buffer for Datas that receive from Lora */
 }SubSys_WirelessCom_BufferTypeDef;
 
 typedef struct{
@@ -171,7 +174,6 @@ typedef struct{
 /******************************************************************************
          			#### WIRELESSCOM PROTOTYPES OF FUNCTIONS ####
 ******************************************************************************/
-
 /**
   * @brief Decimal, float and other formats are converted as character and save them into the TX buffer.
   * 		When TX buffer is fulfilled , it is sent by UART interface.
@@ -190,6 +192,24 @@ typedef struct{
   */
 void SubSys_WirelessCom_Telemetry_Transfer_From_To(MissionUnit From_X, MissionUnit To_Y, SubSys_WirelessCom_APP_HandleTypeDef *dev_WirelessComApp);
 
+
+/**
+  * @brief
+  * @note  Follow the transmitting rules, each if and else has a reason
+  * @param MissionUnit From_X, Packet type used for your specific purpose. Where do you  want to take it, select that.
+  * 																	  @arg 0 : Sat_Carrier
+  * 																 	  @arg 1 : Sat_Payload
+  * 																  	  @arg 2 : Ground_Sation
+  *
+  * @param MissionUnit To_Y, Packet type used for your specific purpose. Where do you want to send it, select that.
+  * 																	  @arg 0 : Sat_Carrier
+  * 																 	  @arg 1 : Sat_Payload
+  * 																  	  @arg 2 : Ground_Sation
+  * @param SubSys_WirelessCom_APP_HandleTypeDef *dev_WirelessComApp , created object for wireless communication
+  * @retval NONE
+  */
+
+void SubSys_WirelessCom_Telemetry_Receive_From_To(MissionUnit From_X, MissionUnit To_Y, SubSys_WirelessCom_APP_HandleTypeDef *dev_WirelessComApp);
 
 
 /**

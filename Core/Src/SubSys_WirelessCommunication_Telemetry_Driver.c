@@ -4,6 +4,7 @@
 ******************************************************************************/
 #include "SubSys_WirelessCommunication_Telemetry_Driver.h"
 #include "stdio.h"
+#include "stdlib.h"
 /******************************************************************************
          				#### WIRELESSCOM VARIABLES ####
 ******************************************************************************/
@@ -77,13 +78,12 @@ void SubSys_WirelessCom_Telemetry_Transfer_From_To(MissionUnit From_X, MissionUn
 
 				}
 
-
-
-
 				HAL_UART_Transmit(dev_WirelessComApp->huartX, dev_WirelessComApp->Buffer.Tx , (Written_Bytes+3), 1000);
 	}
 
 }
+
+
 
 
 /**
@@ -165,5 +165,30 @@ void SubSys_WirelessCom_Telemetry_Create_Packet_For(MissionUnit x,SubSys_Wireles
 
 		   }
 
+}
+
+void SubSys_WirelessCom_Telemetry_Receive_From_To(MissionUnit From_X, MissionUnit To_Y, SubSys_WirelessCom_APP_HandleTypeDef *dev_WirelessComApp){
+
+		void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+		{
+			/*! which UART interface receive data?
+			 * UART2 is for Wireless communication
+			 */
+			if(huart->Instance == USART2)
+			{
+				/*! Ok data came but where ? Ground Station or Carrier unit
+				 * We need to parse the incoming array so that we can learn it*/
+
+
+			}
+
+
+		/*! Contanie to receive data from carrier unit or ground station.
+		 *  Good news and bad news, all of them can be filled but the order of the data can be stuck
+		 *  We'll see bro
+		 */
+		HAL_UART_Receive_IT(dev_WirelessComApp->huartX, dev_WirelessComApp->Buffer.Rx, sizeof(dev_WirelessComApp->Buffer.Rx));
+
+		}
 }
 
