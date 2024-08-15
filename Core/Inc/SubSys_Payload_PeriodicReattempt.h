@@ -26,7 +26,7 @@ extern MS5611_HandleTypeDef MS5611;								/*! MS5611 object									  */
 extern char SdDatasBuf[LineSize];								/*! We create a buffer that contains the satellite's variables, and we fill it with variables from SD_Data objects */
 extern SubSys_WirelessCom_APP_HandleTypeDef dev_WirelessComApp; /*! Wireless Communication application object */
 extern uint32_t SystemTick;   				 					/*! All system units will be work together at 1Hz*/
-
+extern uint32_t NumberOfTelePacket;								/*! The value is incremented by +1 at the end of each satellite operation period */
 
 /******************************************************************************
          			#### FUNCTIONS ####

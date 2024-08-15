@@ -38,15 +38,38 @@ void SubSys_WirelessCom_Telemetry_Transfer_From_To(MissionUnit From_X, MissionUn
 
 				/* 8 pairs of '<>' and y Byte data are x Byte as total budget*/
 				Written_Bytes = sprintf(dev_WirelessComApp->Buffer.Temp,
-																		"<%.2f><%.2f><%.1f><%.1f><%.2f><%.4f><%.4f><%.1f>\n",
-																															dev_WirelessComApp->Variable.Carr_Pressure,
-																															dev_WirelessComApp->Variable.Carr_Temperature,
-																															dev_WirelessComApp->Variable.Carr_VertHeight,
-																															dev_WirelessComApp->Variable.Carr_VertSpeed,
-																															dev_WirelessComApp->Variable.Carr_BatteryVoltage,
-																															dev_WirelessComApp->Variable.Carr_GPS_Latitude,
-																															dev_WirelessComApp->Variable.Carr_GPS_Longitude,
-																															dev_WirelessComApp->Variable.Carr_GPS_Altitude);
+									   "<%d><%d><%d>,<%d/%d/%d:%d/%d/%d>,<%.2f><%.2f><%.2f><%.2f><%.2f><%.2f><%.2f><%.2f><%.6f><%.6f><%.2f><%.2f><%.2f><%.2f><%c,%c,%c,%c><%.2f><%d>\n",
+																		 dev_WirelessComApp->Variable.PAY_NumOfPacket,
+																		 dev_WirelessComApp->Variable.PAY_SatelliteStatus,
+																		 dev_WirelessComApp->Variable.PAY_SatelliteErrorCode,
+																		 dev_WirelessComApp->Variable.PAY_date,
+																		 dev_WirelessComApp->Variable.PAY_month,
+																		 dev_WirelessComApp->Variable.PAY_year,
+																		 dev_WirelessComApp->Variable.PAY_hour,
+																		 dev_WirelessComApp->Variable.PAY_minute,
+																		 dev_WirelessComApp->Variable.PAY_second,
+																		 dev_WirelessComApp->Variable.PAY_Pressure,
+																		 dev_WirelessComApp->Variable.PAY_Pressure2,
+																		 dev_WirelessComApp->Variable.PAY_VertHeight,
+																		 dev_WirelessComApp->Variable.PAY_VertHeight2,
+																		 dev_WirelessComApp->Variable.PAY_PAY2CAR_DiffHeight,
+																		 dev_WirelessComApp->Variable.PAY_VertSpeed,
+																		 dev_WirelessComApp->Variable.PAY_Temperature,
+																		 dev_WirelessComApp->Variable.PAY_BatteryVoltage,
+																		 dev_WirelessComApp->Variable.PAY__GPS_Latitude,
+																		 dev_WirelessComApp->Variable.PAY__GPS_Longitude,
+																		 dev_WirelessComApp->Variable.PAY__GPS_Altitude,
+																		 dev_WirelessComApp->Variable.PAY_Pitch,
+																		 dev_WirelessComApp->Variable.PAY_Roll,
+																		 dev_WirelessComApp->Variable.PAY_Yaw,
+																		 dev_WirelessComApp->Variable.PAY_dataRHRH[0],
+																		 dev_WirelessComApp->Variable.PAY_dataRHRH[1],
+																		 dev_WirelessComApp->Variable.PAY_dataRHRH[2],
+																		 dev_WirelessComApp->Variable.PAY_dataRHRH[3],
+																		 dev_WirelessComApp->Variable.PAY_IOT_Temperature,
+																		 dev_WirelessComApp->Variable.PAY_TeamNumber);
+
+
 
 				for(int i = 0 ; i < Written_Bytes ; i++){
 
@@ -77,7 +100,7 @@ void SubSys_WirelessCom_Telemetry_Transfer_From_To(MissionUnit From_X, MissionUn
 void SubSys_WirelessCom_Telemetry_Create_Packet_For(MissionUnit x,SubSys_WirelessCom_APP_HandleTypeDef *dev_WirelessComApp){
 
 	switch(x){
-		case Sat_Payload :
+		case Sat_Payload :  /*! This case create a packet for transmission from payload to the ground station */
 
 			/*-------------TARGET DEVICE ADDRESS AND CHANNEL INFO----------------*/
 			/*! Target device will be Satellite's Payload*/
@@ -85,23 +108,58 @@ void SubSys_WirelessCom_Telemetry_Create_Packet_For(MissionUnit x,SubSys_Wireles
 			dev_WirelessComApp->Buffer.Tx[1] = dev_WirelessComApp->Target_ADDL;
 			dev_WirelessComApp->Buffer.Tx[2] = dev_WirelessComApp->Target_Ch;
 
-			/*-------------YOUR DEVICE VARIABLE THAT YOU WİLL SEND----------------*/ /*Note : Will be system variable opposite to variables*/
-			/*From MS5611*/
-			dev_WirelessComApp->Variable.Carr_Pressure    = MS5611_Press;
-			dev_WirelessComApp->Variable.Carr_Temperature = MS5611_Temp;
-			dev_WirelessComApp->Variable.Carr_VertHeight  = MS5611_Altitude;
-			dev_WirelessComApp->Variable.Carr_VertSpeed   = MS5611_VertSpeed;
+			/*-------------YOUR DEVICE VARIABLE THAT WILL BE SEND----------------*/ /*Note : Will be system variable opposite to variables*/
+			/*From MS5611 & WirelessCommunication device*/
+			dev_WirelessComApp->Variable.PAY_Pressure    = MS5611_Press;
+			dev_WirelessComApp->Variable.PAY_Pressure2	 = CarrierPressure;
+			dev_WirelessComApp->Variable.PAY_Temperature = MS5611_Temp;
+			dev_WirelessComApp->Variable.PAY_VertHeight  = MS5611_Altitude;
+			dev_WirelessComApp->Variable.PAY_VertHeight2 = CarrierVertHeight;
+			dev_WirelessComApp->Variable.PAY_VertSpeed   = MS5611_VertSpeed;
+			dev_WirelessComApp->Variable.PAY_PAY2CAR_DiffHeight = PAY2CAR_DiffHeight;
 
 			/*From ADC*/
-			dev_WirelessComApp->Variable.Carr_BatteryVoltage = BatteryVoltage;
+			dev_WirelessComApp->Variable.PAY_BatteryVoltage = BatteryVoltage;
 
 			/*From L-86GPS*/
-			dev_WirelessComApp->Variable.Carr_GPS_Latitude  = GPS_Latitude;
-			dev_WirelessComApp->Variable.Carr_GPS_Longitude = GPS_Longitude;
-			dev_WirelessComApp->Variable.Carr_GPS_Altitude  = GPS_Altitude;
+			dev_WirelessComApp->Variable.PAY__GPS_Latitude  = GPS_Latitude;
+			dev_WirelessComApp->Variable.PAY__GPS_Longitude = GPS_Longitude;
+			dev_WirelessComApp->Variable.PAY__GPS_Altitude  = GPS_Altitude;
 
 			/*! Each time a packet is generated, the count will increase by 1*/
-			dev_WirelessComApp->Variable.NumOfPacket++;
+			dev_WirelessComApp->Variable.PAY_NumOfPacket    = NumberOfTelePacket;
+
+			/*From FlightStatus driver*/
+			dev_WirelessComApp->Variable.PAY_SatelliteStatus = SatelliteStatus;
+
+			/*From ARAS driver*/
+			dev_WirelessComApp->Variable.PAY_SatelliteErrorCode = SatelliteErrorCode;
+
+			/*From RTC module*/
+			dev_WirelessComApp->Variable.PAY_date	= date;
+			dev_WirelessComApp->Variable.PAY_month	= month;
+			dev_WirelessComApp->Variable.PAY_year	= year;
+			dev_WirelessComApp->Variable.PAY_hour	= hour;
+			dev_WirelessComApp->Variable.PAY_minute	= minute;
+			dev_WirelessComApp->Variable.PAY_second = second;
+
+			/*From IMU*/
+			dev_WirelessComApp->Variable.PAY_Pitch	= euler_pitch;
+			dev_WirelessComApp->Variable.PAY_Roll	= euler_roll;
+			dev_WirelessComApp->Variable.PAY_Yaw	= euler_yaw;
+
+			/*From GroundStation PC telecommand*/
+			dev_WirelessComApp->Variable.PAY_dataRHRH[0] = command_RHRH[0];
+			dev_WirelessComApp->Variable.PAY_dataRHRH[1] = command_RHRH[1];
+			dev_WirelessComApp->Variable.PAY_dataRHRH[2] = command_RHRH[2];
+			dev_WirelessComApp->Variable.PAY_dataRHRH[3] = command_RHRH[3];
+
+			/*From Ground Station*/
+			dev_WirelessComApp->Variable.PAY_IOT_Temperature = GroundStation_IOTTemparature;
+
+
+			/*From main.c code block*/
+			dev_WirelessComApp->Variable.PAY_TeamNumber = Race_TeamNo;
 
 			break;
 

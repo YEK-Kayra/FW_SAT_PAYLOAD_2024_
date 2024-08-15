@@ -30,20 +30,67 @@ typedef enum{
 /******************************************************************************
          				#### WIRELESSCOM EXTERNS ####
 ******************************************************************************/
+extern uint32_t NumberOfTelePacket;	 /*! The value is incremented by +1 at the end of each satellite operation period */
+
+/**
+ * 0: Ready for Launch (Before Rocket Ignition)
+ * 1: Ascent
+ * 2: Model Satellite Descent
+ * 3: Separation
+ * 4: Payload Descent
+ * 5: Recovery (Payload Ground Contact)
+ */
+extern uint8_t SatelliteStatus;
+
+/**
+ * Releated byte will be ==> xxxx xxxx
+ * index:
+ * 	 	 0-> Satt. velocity is not range of 12-14 m/s.
+ * 		 1-> Payload velocity is not range of 6-8 m/s.
+ * 		 2-> Unable to get carrier pressure
+ * 		 3-> Unable to get payload location
+ * 		 4-> Autonomous separation did not occur
+ */
+extern uint8_t SatelliteErrorCode;
+
+/**!
+ * SubSys_Sensor_RTC_Driver variables
+ */
+extern uint8_t date ;
+extern uint8_t month;
+extern uint16_t year ;
+extern uint8_t hour ;
+extern uint8_t minute;
+extern uint8_t second ;
+
 
 extern float MS5611_Press;            /*! Pressure data variable 			*/
 extern float MS5611_Temp;             /*! Temperature data variable 		*/
 extern float MS5611_Altitude;         /*! Vertical Altitude data variable 	*/
 extern float MS5611_VertSpeed;        /*! Vertical Speed data variable 		*/
-extern float MS5611_VertAcc;          /*! Vertical Acceleration variable 	*/
-extern float MS5611_gForce;           /*! Vertical g force data variable 	*/
-extern float SatCar_Mass;             /*! Total mass of Satellites Carrier module */
+
 
 extern float BatteryVoltage;		  /*! Voltage of the Satellite's battery  	  */
 
 extern float GPS_Altitude;			  /*! Vertical distance info of satellite beetween  */
 extern float GPS_Longitude;			  /*! Location info of satellite on the earth 	 	*/
 extern float GPS_Latitude;			  /*! Location info of satellite on the earth 	 	*/
+
+/**!
+ * SubSys_Sensor_IMU_APP_Driver variables
+ */
+extern float euler_roll;
+extern float euler_pitch;
+extern float euler_yaw;
+
+extern float PAY2CAR_DiffHeight;
+extern float CarrierPressure;
+extern float CarrierVertHeight;
+
+extern float GroundStation_IOTTemparature;
+
+extern char command_RHRH[4];			/*! Rakam Harf Rakam Harf receiving datas from ground station pc */
+extern const uint32_t Race_TeamNo; 		/*! It is a fixed number provided by the competition organization.*/
 
 
 /******************************************************************************
@@ -52,24 +99,48 @@ extern float GPS_Latitude;			  /*! Location info of satellite on the earth 	 	*/
 
 typedef struct{
 
-	/*####################### SATELLITE CARRIER UNIT VARIABLES #######################*/
+	/*####################### SATELLITE PAYLOAD UNIT VARIABLES #######################*/
 
 	  	 /*-----------------------THERE ARE 59 BYTE FOR CARRIER PACKET--------------------------*/
 			/*! Will be filled by MS5611 sensor*/
-			float Carr_Pressure;		/* Unit : pascal 		(12Byte)e.g  => "101325.5938"   			*/
-			float Carr_VertSpeed;		/* Unit : meter/second	(5Byte) e.g  => "1.0, 10.2, 158.7 "		  	*/
-			float Carr_VertHeight;		/* Unit : meter 		(6Byte) e.g  => "223.4, 1023.7"		  		*/
-			float Carr_Temperature;		/* Unit : C°,celcius 	(4Byte) e.g  => "32.7"		  				*/
+			float PAY_Pressure;			/* Unit : pascal 		(12Byte)e.g  => "101325.5938"   				*/
+			float PAY_VertSpeed;		/* Unit : meter/second	(5Byte) e.g  => "1.0, 10.2, 158.7 "		  		*/
+			float PAY_VertHeight;		/* Unit : meter 		(6Byte) e.g  => "223.4, 1023.7"		  			*/
+			float PAY_Temperature;		/* Unit : C°,celcius 	(4Byte) e.g  => "32.7"		  					*/
+			float PAY_Pressure2;		/* Unit : pascal 		(12Byte)e.g  => "101325.5938"   				*/
+			float PAY_VertHeight2;		/* Unit : meter 		(6Byte) e.g  => "223.4, 1023.7"		  			*/
+			/*! Will be filled by used ADC interface*/
+			float PAY_BatteryVoltage;	/* Unit : Voltage		(4Byte) e.g => "8.25"							*/
 
-			/* Will be filled by used ADC interface*/
-			float Carr_BatteryVoltage;	/* Unit : Voltage		(4Byte) e.g => "8.25"						*/
+			/*! Will be filled by L-86 GPS*/
+			float PAY__GPS_Latitude;	/* Unit : degrees and minute(°)(')	(10Byte) e.g => "3150.7822N"  ,	NMEA data it means 31° 50.7822' minute 	'N' will be send separately		 */
+			float PAY__GPS_Longitude;	/* Unit : degrees and minute(°)(') 	(10Byte) e.g => "11711.9278E" , NMEA data it means 117° 11.9278 minute	'E' will be send separately		 */
+			float PAY__GPS_Altitude;	/* Unit : meter 					(6Byte) e.g =>  "1214.4"	  , NMEA data it means 1214.4 meter from sea. GPGGA is provides 			 */
 
-			/* Will be filled by L-86 GPS*/
-			float Carr_GPS_Latitude;	/* Unit : degrees and minute(°)(')	(10Byte) e.g => "3150.7822N"  ,	NMEA data it means 31° 50.7822' minute 	'N' will be send separately		 */
-			float Carr_GPS_Longitude;	/* Unit : degrees and minute(°)(') 	(10Byte) e.g => "11711.9278E" , NMEA data it means 117° 11.9278 minute	'E' will be send separately		 */
-			float Carr_GPS_Altitude;	/* Unit : meter 					(6Byte) e.g =>  "1214.4"	  , NMEA data it means 1214.4 meter from sea. GPGGA is provides 			 */
-			uint32_t NumOfPacket;					/* Unit : unsigned int (4Byte) e.g => "337	  */
+			/*! Will be filled by IMU*/
+			float PAY_Roll;			/*! IMU Roll Angle  */
+			float PAY_Pitch;		/*! IMU Pitch Angle */
+			float PAY_Yaw;			/*! IMU Yaw Angle   */
 
+			/*! Will be filled by RTC sensor*/
+			uint8_t  PAY_date ;
+			uint8_t  PAY_month;
+			uint16_t PAY_year ;
+			uint8_t  PAY_hour ;
+			uint8_t  PAY_minute;
+			uint8_t  PAY_second ;
+
+			uint32_t PAY_NumOfPacket;					/* Unit : unsigned int (4Byte) e.g => "337	  */
+
+			uint8_t PAY_SatelliteErrorCode;
+			uint8_t PAY_SatelliteStatus;
+
+			float PAY_PAY2CAR_DiffHeight;
+
+			float PAY_IOT_Temperature;
+			uint32_t PAY_TeamNumber;
+
+			char PAY_dataRHRH[4];						/* Unit : char(1Byte) e.g => '3','G','7','B' */
 }SubSys_WirelessCom_VariableTypeDef;
 
 typedef struct{

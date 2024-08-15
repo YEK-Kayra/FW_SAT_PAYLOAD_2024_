@@ -41,6 +41,11 @@
   *		 If you remove this part, the related code will work and complied
   *
   *		 "The __notSuccessful , related part of the code didn't work or test
+  *
+  *		 Somewhere of the code has some variable that has '2' at end of the variable
+  *		 as like "PAY_Pressure2", "PAY_VertHeight2".
+  *		 that means these variable will be filled by Satellite's Carrier Unit
+  *
   ******************************************************************************
   */
 /* USER CODE END Header */
@@ -218,9 +223,19 @@ UART_HandleTypeDef huart2;
 	uint8_t SatelliteErrorCode;
 
 	uint8_t AutonomoSeparationStatus = Permission_NOT;	 /*! if the value is 0 that means there is no separation permission else permission is OK*/
+
 	uint32_t NumberOfTelePacket = 0;		 			 /*! The value is incremented by +1 at the end of each satellite operation period */
 
-	const uint32_t Race_TeamNo = 270061; /*! It is a fixed number provided by the competition organization.*/
+	const uint32_t Race_TeamNo = 270061; 				 /*! It is a fixed number provided by the competition organization.*/
+
+	float PAY2CAR_DiffHeight = 0;						 /*! Vertical Height value from Satellite payload to carrier unit*/
+
+	float CarrierPressure;								 /*! Carrier Unit's pressure data*/
+	float CarrierVertHeight;							 /*! Carrier Unit's vertical height data*/
+
+	float GroundStation_IOTTemparature;					 /*! IOT mission , gets datas from Ground Station PC */
+
+	char command_RHRH[4];								 /*! Rakam Harf Rakam Harf receiving datas from ground station pc */
 
 /* USER CODE END PV */
 

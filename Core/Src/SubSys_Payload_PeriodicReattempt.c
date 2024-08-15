@@ -38,6 +38,7 @@ void SubSys_Payload_MissionRetryLoop(){
 	/*! Transfer all necessary datas from Carrier to Payload of Satellite*/
 	SubSys_WirelessCom_Telemetry_Transfer_From_To(Sat_Payload, GroundStation, &dev_WirelessComApp);
 
+	NumberOfTelePacket++;
 
 	/*! The system time is retrieved again and the loop waits until the elapsed time reaches 1000 milliseconds*/
 	HAL_Delay(abs(1000 - (HAL_GetTick() - SystemTick)));
