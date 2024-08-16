@@ -169,6 +169,9 @@ void SubSys_WirelessCom_Telemetry_Create_Packet_For(MissionUnit x,SubSys_Wireles
 
 void SubSys_WirelessCom_Telemetry_Receive_From_To(MissionUnit From_X, MissionUnit To_Y, SubSys_WirelessCom_APP_HandleTypeDef *dev_WirelessComApp){
 
+
+	const
+
 		void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		{
 			/*! which UART interface receive data?
@@ -176,9 +179,24 @@ void SubSys_WirelessCom_Telemetry_Receive_From_To(MissionUnit From_X, MissionUni
 			 */
 			if(huart->Instance == USART2)
 			{
-				/*! Ok data came but where ? Ground Station or Carrier unit
-				 * We need to parse the incoming array so that we can learn it*/
 
+				/*! Ok data came but where ? Ground Station or Carrier unit
+				 * We need to parse the incoming array so that we can learn it.
+				 * If the message packet contains the 'C' character, then this message belongs to the Carrier
+				 * If the message packet contains the 'G' character, then this message belongs to the Ground Station*/
+
+				/* The data sequence in the telemetry packet is as follows: <ADDH><ADDL><CHN><FromWhereCharacter><SatelliteDatas....>"*/
+
+				if(dev_WirelessComApp->Buffer.Rx[3] == 'C')
+				{
+					/*! */
+
+				}
+
+				if(dev_WirelessComApp->Buffer.Rx[3] == 'G')
+				{
+
+				}
 
 			}
 
