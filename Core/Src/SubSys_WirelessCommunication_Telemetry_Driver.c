@@ -175,7 +175,6 @@ void SubSys_WirelessCom_Telemetry_Receive_From_To(MissionUnit From_X, MissionUni
 					 * If the message packet contains the 'G' character, then this message belongs to the Ground Station*/
 
 					/* The data sequence in the telemetry packet is as follows: <ADDH><ADDL><CHN><FromWhereCharacter><SatelliteDatas....>"*/
-
 					if(dev_WirelessComApp->Buffer.Rx[0] == 'C')
 					{
 						extractValues(dev_WirelessComApp->Buffer.Rx, value1, value2);
@@ -187,6 +186,16 @@ void SubSys_WirelessCom_Telemetry_Receive_From_To(MissionUnit From_X, MissionUni
 
 					if(dev_WirelessComApp->Buffer.Rx[0] == 'G')
 					{
+
+						/**! First, the incoming commands from the ground station packet should be parsed,
+						 * 	 and a command list should be created.
+						 *
+						 *	<AADH><ADDL><CHNL><G><+,-(ManuelSeparation)><+,-(SwitchCamera)><IOT_Data><R><H><R><H>
+						 */
+
+
+
+
 
 					}
 
