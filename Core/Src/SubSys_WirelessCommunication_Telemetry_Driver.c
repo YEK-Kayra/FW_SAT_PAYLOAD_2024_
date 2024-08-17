@@ -9,7 +9,8 @@
          				#### WIRELESSCOM VARIABLES ####
 ******************************************************************************/
 uint16_t Written_Bytes; /* is for save number of total converted buffer's characters*/
-
+char value1[20];  // İlk değeri saklamak için     /* Carrier pressure information		 */
+char value2[20];  // İkinci değeri saklamak için  /* Carrier Vertical height information */
 /******************************************************************************
          				#### WIRELESSCOM  FUNCTIONS ####
 ******************************************************************************/
@@ -39,7 +40,7 @@ void SubSys_WirelessCom_Telemetry_Transfer_From_To(MissionUnit From_X, MissionUn
 
 				/* 8 pairs of '<>' and y Byte data are x Byte as total budget*/
 				Written_Bytes = sprintf(dev_WirelessComApp->Buffer.Temp,
-									   "<%d><%d><%d>,<%d/%d/%d:%d/%d/%d>,<%.2f><%.2f><%.2f><%.2f><%.2f><%.2f><%.2f><%.2f><%.6f><%.6f><%.2f><%.2f><%.2f><%.2f><%c,%c,%c,%c><%.2f><%d>\n",
+									   "<%u><%d><%d>,<%d/%d/%d:%d/%d/%d>,<%.2f><%.2f><%.2f><%.2f><%.2f><%.2f><%.2f><%.2f><%.6f><%.6f><%.2f><%.2f><%.2f><%.2f><%c,%c,%c,%c><%.2f><%u>\n",
 																		 dev_WirelessComApp->Variable.PAY_NumOfPacket,
 																		 dev_WirelessComApp->Variable.PAY_SatelliteStatus,
 																		 dev_WirelessComApp->Variable.PAY_SatelliteErrorCode,
@@ -166,47 +167,34 @@ void SubSys_WirelessCom_Telemetry_Create_Packet_For(MissionUnit x,SubSys_Wireles
 		   }
 
 }
-
 void SubSys_WirelessCom_Telemetry_Receive_From_To(MissionUnit From_X, MissionUnit To_Y, SubSys_WirelessCom_APP_HandleTypeDef *dev_WirelessComApp){
 
+					/*! Ok data came but where ? Ground Station or Carrier unit
+					 * We need to parse the incoming array so that we can learn it.
+					 * If the message packet contains the 'C' character, then this message belongs to the Carrier
+					 * If the message packet contains the 'G' character, then this message belongs to the Ground Station*/
 
-	const
+					/* The data sequence in the telemetry packet is as follows: <ADDH><ADDL><CHN><FromWhereCharacter><SatelliteDatas....>"*/
 
-		void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-		{
-			/*! which UART interface receive data?
-			 * UART2 is for Wireless communication
-			 */
-			if(huart->Instance == USART2)
-			{
+					if(dev_WirelessComApp->Buffer.Rx[0] == 'C')
+					{
+						extractValues(dev_WirelessComApp->Buffer.Rx, value1, value2);
 
-				/*! Ok data came but where ? Ground Station or Carrier unit
-				 * We need to parse the incoming array so that we can learn it.
-				 * If the message packet contains the 'C' character, then this message belongs to the Carrier
-				 * If the message packet contains the 'G' character, then this message belongs to the Ground Station*/
+						CarrierPressure   = atof(value1);
+						CarrierVertHeight = atof(value2);
 
-				/* The data sequence in the telemetry packet is as follows: <ADDH><ADDL><CHN><FromWhereCharacter><SatelliteDatas....>"*/
+					}
 
-				if(dev_WirelessComApp->Buffer.Rx[3] == 'C')
-				{
-					/*! */
+					if(dev_WirelessComApp->Buffer.Rx[3] == 'G')
+					{
 
-				}
+					}
 
-				if(dev_WirelessComApp->Buffer.Rx[3] == 'G')
-				{
+					/*! Contanie to receive data from carrier unit or ground station.
+					 *  Good news and bad news, all of them can be filled but the order of the data can be stuck
+					 *  We'll see bro
+					 */
+					HAL_UART_Receive_IT(dev_WirelessComApp->huartX, (uint8_t *)dev_WirelessComApp->Buffer.Rx, sizeof(dev_WirelessComApp->Buffer.Rx));
 
-				}
-
-			}
-
-
-		/*! Contanie to receive data from carrier unit or ground station.
-		 *  Good news and bad news, all of them can be filled but the order of the data can be stuck
-		 *  We'll see bro
-		 */
-		HAL_UART_Receive_IT(dev_WirelessComApp->huartX, dev_WirelessComApp->Buffer.Rx, sizeof(dev_WirelessComApp->Buffer.Rx));
-
-		}
 }
 

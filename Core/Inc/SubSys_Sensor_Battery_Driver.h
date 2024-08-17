@@ -16,6 +16,7 @@
 #include "main.h"
 #include "stdio.h"
 #include "stm32f4xx_hal_tim.h"
+#include "SubSys_AlertControl_Driver.h"
 
 
 /******************************************************************************

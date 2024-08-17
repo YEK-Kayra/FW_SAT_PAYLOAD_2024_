@@ -62,6 +62,7 @@
 #include "SubSys_Sensor_GPS_Driver.h"
 #include "SubSys_WirelessCommunication_Setting_Driver.h"
 #include "SubSys_WirelessCommunication_Telemetry_Driver.h"
+#include "SubSys_WirelessCommunication_Telemetry_ExtractValue_Driver.h"
 #include "SubSys_ARAS.h"
 #include "SubSys_Sensor_RTC_Driver.h"
 
@@ -74,6 +75,8 @@
 
 #include "SubSys_Payload_FlightStatus.h"
 #include "SubSys_Payload_PeriodicReattempt.h"
+
+#include "SubSys_USART_ReceiveIT_CallBacks_Driver.h"
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -311,7 +314,7 @@ int main(void)
 
 
   /******>>> SENSOR TPGVH INITIALIZATION BEGIN >>>******/
-  	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_TPGVH_H__CLOSED
+  	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_TPGVH_H
   	MS5611.I2C_ADDRESS = MS5611_I2C_ADDRESS_H;
   	MS5611.i2c = &hi2c1;
   	MS5611.Ref_Alt_Sel = 'm';
@@ -363,7 +366,7 @@ int main(void)
 
 
   /******>>> SENSOR GPS INITIALIZATION BEGIN >>>******/
-	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_GPS_H__CLOSED
+	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_GPS_H
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_SET);
 	GPS_Init();
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_RESET);
@@ -401,8 +404,9 @@ int main(void)
 	 dev_WirelessComApp.Target_ADDL = 0x23;
 	 dev_WirelessComApp.Target_Ch   = 0x10;
 
-	  /*! Interrupt is active for receiving wireless data */
-	  HAL_UART_Receive_IT(dev_WirelessComApp.huartX, dev_WirelessComApp.Buffer.Rx, sizeof(dev_WirelessComApp.Buffer.Rx));
+	  /*! Interrupt is active for receiving wireless data
+	   * You need to cast variable type from char to uint8_t because of the instruction of Uart Receive function*/
+	  HAL_UART_Receive_IT(dev_WirelessComApp.huartX, (uint8_t *)dev_WirelessComApp.Buffer.Rx, sizeof(dev_WirelessComApp.Buffer.Rx));
 
 	 #endif
   /******<<< WIRELESS COMMUNICATION SETTING & TELEMETRY INITIALIZATION END <<<******/
@@ -499,9 +503,8 @@ int main(void)
 
 
 	/******>>> CAMERA ACTIVE INITIALIZATION BEGIN >>>******/
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, GPIO_PIN_SET);
+	 //HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, GPIO_PIN_SET);
 	/******<<< CAMERA ACTIVE INITIALIZATION END <<<******/
-
 
 
   /* USER CODE END 2 */
@@ -988,10 +991,10 @@ static void MX_DMA_Init(void)
 
   /* DMA interrupt init */
   /* DMA2_Stream3_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA2_Stream3_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(DMA2_Stream3_IRQn, 3, 3);
   HAL_NVIC_EnableIRQ(DMA2_Stream3_IRQn);
   /* DMA2_Stream6_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA2_Stream6_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(DMA2_Stream6_IRQn, 3, 3);
   HAL_NVIC_EnableIRQ(DMA2_Stream6_IRQn);
 
 }

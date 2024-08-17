@@ -51,7 +51,8 @@ extern uint8_t second ;
 
 extern uint32_t Race_TeamNo;
 
-
+extern float CarrierPressure;
+extern float CarrierVertHeight;
 
 void SD_FillVariables(void){
 
@@ -68,9 +69,9 @@ void SD_FillVariables(void){
 		SD_Data.PAY_DateTime[5] = second;
 
 		SD_Data.PAY_Pressure 	= MS5611_Press;
-		SD_Data.CAR_Pressure;
+		SD_Data.CAR_Pressure    = CarrierPressure;
 		SD_Data.PAY_Height 		= MS5611_Altitude;
-		SD_Data.CAR_Height;
+		SD_Data.CAR_Height		= CarrierVertHeight;
 		SD_Data.PAY2CAR_DiffHeight = (SD_Data.PAY_Height-SD_Data.CAR_Height);
 
 		SD_Data.PAY_VertSpeed 	= MS5611_VertSpeed;

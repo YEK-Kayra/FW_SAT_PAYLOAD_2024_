@@ -7,14 +7,14 @@
          				#### WIRELESSCOM INCLUDES ####
 ******************************************************************************/
 #include "main.h"
-
+#include "SubSys_WirelessCommunication_Telemetry_ExtractValue_Driver.h"
 /******************************************************************************
          				#### WIRELESSCOM DEFINITIONS ####
 ******************************************************************************/
 
 /*! 200 is the number of packets the LoRa module can send in a single transmission */
 #define SizeOf_Wireless_TX_Buff_PAYLOAD 	200
-#define SizeOf_Wireless_RX_Buff_CARRIER 	50
+#define SizeOf_Wireless_RX_Buff_CARRIER 	27
 /******************************************************************************
          				#### WIRELESSCOM ENUMS ####
 ******************************************************************************/
@@ -30,6 +30,8 @@ typedef enum{
 /******************************************************************************
          				#### WIRELESSCOM EXTERNS ####
 ******************************************************************************/
+
+
 extern UART_HandleTypeDef huart2;
 
 extern uint32_t NumberOfTelePacket;	 /*! The value is incremented by +1 at the end of each satellite operation period */
@@ -149,7 +151,7 @@ typedef struct{
 typedef struct{
 	uint8_t Tx[SizeOf_Wireless_TX_Buff_PAYLOAD];	 /*! Buffer for Datas that send to Lora 	 */
 	char 	Temp[SizeOf_Wireless_TX_Buff_PAYLOAD];	 /*! Buffer for Datas that send to Lora		 */
-	char 	Rx[SizeOf_Wireless_RX_Buff_CARRIER];	 /*! Buffer for Datas that receive from Lora */
+	char	 Rx[SizeOf_Wireless_RX_Buff_CARRIER];	 /*! Buffer for Datas that receive from Lora */
 }SubSys_WirelessCom_BufferTypeDef;
 
 typedef struct{
@@ -226,5 +228,5 @@ void SubSys_WirelessCom_Telemetry_Receive_From_To(MissionUnit From_X, MissionUni
  */
 void SubSys_WirelessCom_Telemetry_Create_Packet_For(MissionUnit x,SubSys_WirelessCom_APP_HandleTypeDef *dev_WirelessComApp);
 
-
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
 #endif /* SAT_CARRIER_SUBSYS_DRIVERS_SUBSYS_INC_SUBSYS_WIRELESSCOMMUNICATION_TELEMETRY_DRIVER_H_ */

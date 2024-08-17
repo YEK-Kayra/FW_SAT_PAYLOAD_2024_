@@ -18,8 +18,8 @@ extern Actuator_Servo_HandleTypeDef dev_Servo_Separation;
 /******************************************************************************
          			#### FUNCTIONS ####
 ******************************************************************************/
-void SubSys_SeparationMechanism_Lock_PayloadToCarrier();
-void SubSys_SeparationMechanism_UnLock_PayloadFromCarrier();
+void SubSys_SeparationMechanism_Lock_PayloadToCarrier(void);
+void SubSys_SeparationMechanism_UnLock_PayloadFromCarrier(void);
 
 
 #endif /* INC_SUBSYS_SEPARATIONCONTROL_DRIVER_H_ */

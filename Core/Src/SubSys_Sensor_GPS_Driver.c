@@ -106,8 +106,4 @@ float GPS_nmea_to_dec(float deg_coord, char nsew) {
     }
     return decimal;
 }
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-	GPS_UART_CallBack();
-   // do nothing here
-}
+

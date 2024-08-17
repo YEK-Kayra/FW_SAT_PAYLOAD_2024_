@@ -10,7 +10,7 @@
 #include "SubSys_AlertControl_Driver.h"
 #include "SubSys_Actuator_Servo_Driver.h"
 #include "SubSys_Payload_PeriodicReattempt.h"
-
+#include "SubSys_SeparationControl_Driver.h"
 
 /******************************************************************************
          				#### ENUMS ####

@@ -8,7 +8,7 @@ void SubSys_Payload_MissionRetryLoop(){
 
 
 	/*! Get current Date & Time */
-	DS1307_GetAllDatas();
+	//DS1307_GetAllDatas();
 
 	/*! It reads the TPGVH data and saves it into the variables created in the system
 	* (T) = Temperature
@@ -20,23 +20,23 @@ void SubSys_Payload_MissionRetryLoop(){
 	MS5611_Read_ActVal(&MS5611);
 
 	/*! It reads the battery voltage and stores it */
-	ReadBatteryVoltage(&hadc1);
+	//ReadBatteryVoltage(&hadc1);
 
 	/*! Get ARAS status data and save value into the "SatelliteErrorCode"*/
-	ARAS_CheckSystem();
+	//ARAS_CheckSystem();
 
 	/*! Get the Roll, Pitch, and Yaw values from the IMU sensor variables. */
-	IMU_GetEulerVector();
+	//IMU_GetEulerVector();
 
 	/*! GPS datas will be getting at the background */
 
 	/*! The collected data is stored into variables that created for the SD card */
-	SD_FillVariables();
+	//SD_FillVariables();
 	/*! The recorded variables are written to the SD card */
-	SD_Write(SdDatasBuf, "SAT_PAY/STM32.TXT");
+	//SD_Write(SdDatasBuf, "SAT_PAY/STM32.TXT");
 
 	/*! Transfer all necessary datas from Carrier to Payload of Satellite*/
-	SubSys_WirelessCom_Telemetry_Transfer_From_To(Sat_Payload, GroundStation, &dev_WirelessComApp);
+	//SubSys_WirelessCom_Telemetry_Transfer_From_To(Sat_Payload, GroundStation, &dev_WirelessComApp);
 
 	NumberOfTelePacket++;
 

@@ -22,6 +22,19 @@ extern float  MS5611_VertSpeed;			/*! Vertical Speed data variable  			     */
 extern float  GPS_Altitude;				/*! Vertical distance info of satellite beetween */
 extern float  GPS_Longitude;			/*! Location info of satellite on the earth 	 */
 extern float  GPS_Latitude;				/*! Location info of satellite on the earth 	 */
+extern float  CarrierPressure;			/*! Carrier Unit's pressure data				 */
+/**
+ * Releated byte will be ==> xxxx xxxx
+ * index:
+ * 	 	 0-> Satt. velocity is not range of 12-14 m/s.
+ * 		 1-> Payload velocity is not range of 6-8 m/s.
+ * 		 2-> Unable to get carrier pressure
+ * 		 3-> Unable to get payload location
+ * 		 4-> Autonomous separation did not occur
+ */
+extern uint8_t SatelliteErrorCode;
+
+extern uint8_t AutonomoSeparationStatus;
 
 
 void ARAS_CheckSystem();

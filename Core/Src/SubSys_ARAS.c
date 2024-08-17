@@ -1,6 +1,6 @@
 #include "SubSys_ARAS.h"
 
-extern uint8_t SatelliteErrorCode;
+
 Aras_Check_HandleTypeDef CheckAras;
 uint8_t total_err= 0;
 /* !Hata durumunun yazılacağı değişken tanımlanır Başlangıç <00000>*/
@@ -11,13 +11,12 @@ uint8_t total_err= 0;
 void ARAS_CheckSystem()
 {
 
-	CheckAras.CARR_LandSpeed;  //lora ile gelen veriden alınır
 	CheckAras.PAYL_LandSpeed  = MS5611_VertSpeed;
-	CheckAras.CARR_Press;	   //lora ile gelen veriden alınır
+	CheckAras.CARR_Press      = CarrierPressure;	   //lora ile gelen veriden alınır
 	CheckAras.PAYL_GPS_Lat 	  = GPS_Latitude ;
 	CheckAras.PAYL_GPS_Long   = GPS_Longitude;
 	CheckAras.PAYL_GPS_Alt    = GPS_Altitude;
-	CheckAras.Seperation_State; // Ayrılma yapılırsa high(1) yapılamadıysa low(0) olcak
+	CheckAras.Seperation_State= AutonomoSeparationStatus; // Ayrılma yapılırsa high(1) yapılamadıysa low(0) olcak
 
 
 	SubSys_ArasCntrl_Sat_LandingSpeed();       //Uydu iniş hızı 12-14m/s; değilse = 1xxxx , ise = 0xxxx
@@ -42,9 +41,7 @@ void SubSys_ArasCntrl_Sat_LandingSpeed(void)
 {
 
 
-	if( ((12 <= CheckAras.CARR_LandSpeed) && (CheckAras.CARR_LandSpeed <= 14))
-										  ||
-	    ((12 <= CheckAras.PAYL_LandSpeed) && (CheckAras.PAYL_LandSpeed <= 14)) )
+	if( ((12 <= CheckAras.PAYL_LandSpeed) && (CheckAras.PAYL_LandSpeed <= 14)) )
 	{
 		total_err += 0;
 	}else{
