@@ -185,7 +185,7 @@ void SubSys_WirelessCom_Telemetry_Receive_From_To(MissionUnit From_X, MissionUni
 
 					}
 
-					if(dev_WirelessComApp->Buffer.Rx[3] == 'G')
+					if(dev_WirelessComApp->Buffer.Rx[0] == 'G')
 					{
 
 					}
