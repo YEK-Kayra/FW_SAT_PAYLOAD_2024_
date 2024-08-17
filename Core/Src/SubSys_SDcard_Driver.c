@@ -54,6 +54,10 @@ extern uint32_t Race_TeamNo;
 extern float CarrierPressure;
 extern float CarrierVertHeight;
 
+extern char command_RHRH[4];								 /*! Rakam Harf Rakam Harf receiving datas from ground station pc */
+
+extern float GroundStation_IOTTemparature;	/*! IOT mission , gets datas from Ground Station PC */
+
 void SD_FillVariables(void){
 
 
@@ -86,12 +90,12 @@ void SD_FillVariables(void){
 		SD_Data.PAY_Roll  = euler_roll;
 		SD_Data.PAY_Yaw   = euler_yaw;
 
-		SD_Data.PAY_RHRH[0];
-		SD_Data.PAY_RHRH[1];
-		SD_Data.PAY_RHRH[2];
-		SD_Data.PAY_RHRH[3];
+		SD_Data.PAY_RHRH[0] = command_RHRH[0];
+		SD_Data.PAY_RHRH[1] = command_RHRH[1];
+		SD_Data.PAY_RHRH[2] = command_RHRH[2];
+		SD_Data.PAY_RHRH[3] = command_RHRH[3];
 
-		SD_Data.Station_IOTdata;
+		SD_Data.Station_IOTdata = GroundStation_IOTTemparature;
 		SD_Data.TeamNo = Race_TeamNo;
 
 

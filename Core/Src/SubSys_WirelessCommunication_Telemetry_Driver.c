@@ -8,9 +8,11 @@
 /******************************************************************************
          				#### WIRELESSCOM VARIABLES ####
 ******************************************************************************/
-uint16_t Written_Bytes; /* is for save number of total converted buffer's characters*/
-char value1[20];  // İlk değeri saklamak için     /* Carrier pressure information		 */
-char value2[20];  // İkinci değeri saklamak için  /* Carrier Vertical height information */
+uint16_t Written_Bytes; /* is for save number of total converted buffer's characters	   */
+char value1[20];  // İlk değeri saklamak için     /* Carrier pressure information		   */
+char value2[20];  // İkinci değeri saklamak için  /* Carrier Vertical height information   */
+char value3[20];  // üçüncü değeri saklamak için  /* Ground Station Temperature information*/
+uint8_t cnt;
 /******************************************************************************
          				#### WIRELESSCOM  FUNCTIONS ####
 ******************************************************************************/
@@ -73,13 +75,19 @@ void SubSys_WirelessCom_Telemetry_Transfer_From_To(MissionUnit From_X, MissionUn
 
 
 
-				for(int i = 0 ; i < Written_Bytes ; i++){
+				for(cnt = 0 ; cnt  < Written_Bytes ; cnt++){
 
-					dev_WirelessComApp->Buffer.Tx[i+3] = dev_WirelessComApp->Buffer.Temp[i];
+					dev_WirelessComApp->Buffer.Tx[cnt+3] = dev_WirelessComApp->Buffer.Temp[cnt];
 
 				}
 
-				HAL_UART_Transmit(dev_WirelessComApp->huartX, dev_WirelessComApp->Buffer.Tx , (Written_Bytes+3), 1000);
+				for (uint8_t j = (cnt + 3); j < SizeOf_Wireless_TX_Buff_PAYLOAD; j++) {
+
+					dev_WirelessComApp->Buffer.Tx[j] = '*';
+
+				}
+
+				HAL_UART_Transmit(dev_WirelessComApp->huartX, dev_WirelessComApp->Buffer.Tx , SizeOf_Wireless_TX_Buff_PAYLOAD, 1000);
 	}
 
 }
@@ -177,7 +185,7 @@ void SubSys_WirelessCom_Telemetry_Receive_From_To(MissionUnit From_X, MissionUni
 					/* The data sequence in the telemetry packet is as follows: <ADDH><ADDL><CHN><FromWhereCharacter><SatelliteDatas....>"*/
 					if(dev_WirelessComApp->Buffer.Rx[0] == 'C')
 					{
-						extractValues(dev_WirelessComApp->Buffer.Rx, value1, value2);
+						extractValues_Carrier(dev_WirelessComApp->Buffer.Rx, value1, value2);
 
 						CarrierPressure   = atof(value1);
 						CarrierVertHeight = atof(value2);
@@ -190,12 +198,28 @@ void SubSys_WirelessCom_Telemetry_Receive_From_To(MissionUnit From_X, MissionUni
 						/**! First, the incoming commands from the ground station packet should be parsed,
 						 * 	 and a command list should be created.
 						 *
-						 *	<AADH><ADDL><CHNL><G><+,-(ManuelSeparation)><+,-(SwitchCamera)><IOT_Data><R><H><R><H>
+						 *	"G<RHRH+><IOTdata>" or "G<RHRH-><IOTdata>"
 						 */
 
+						/*! RHRH data */
+						command_RHRH[0] = dev_WirelessComApp->Buffer.Rx[2];
+						command_RHRH[1] = dev_WirelessComApp->Buffer.Rx[3];
+						command_RHRH[2] = dev_WirelessComApp->Buffer.Rx[4];
+						command_RHRH[3] = dev_WirelessComApp->Buffer.Rx[5];
 
+						/*! +,- ==> '+' symbol means that manual separation should be performed
+						 *      ==> '-' symbol means that manual separation should not be performed
+						 */
+						ManuelSeparationCommand = dev_WirelessComApp->Buffer.Rx[6];
 
+						if(ManuelSeparationCommand == '+'){
 
+							SubSys_SeparationMechanism_UnLock_PayloadFromCarrier();
+
+						}
+
+						extractValues_GroundStation(dev_WirelessComApp->Buffer.Rx, value3);
+						GroundStation_IOTTemparature = atof(value3);
 
 					}
 

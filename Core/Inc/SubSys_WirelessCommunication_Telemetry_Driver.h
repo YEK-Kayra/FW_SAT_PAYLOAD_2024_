@@ -8,6 +8,7 @@
 ******************************************************************************/
 #include "main.h"
 #include "SubSys_WirelessCommunication_Telemetry_ExtractValue_Driver.h"
+#include "SubSys_SeparationControl_Driver.h"
 /******************************************************************************
          				#### WIRELESSCOM DEFINITIONS ####
 ******************************************************************************/
@@ -92,6 +93,8 @@ extern float CarrierPressure;
 extern float CarrierVertHeight;
 
 extern float GroundStation_IOTTemparature;
+extern uint8_t AutonomoSeparationStatus;
+extern char ManuelSeparationCommand;
 
 extern char command_RHRH[4];			/*! Rakam Harf Rakam Harf receiving datas from ground station pc */
 extern const uint32_t Race_TeamNo; 		/*! It is a fixed number provided by the competition organization.*/

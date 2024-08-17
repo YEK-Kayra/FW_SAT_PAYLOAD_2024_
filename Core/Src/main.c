@@ -224,6 +224,7 @@ UART_HandleTypeDef huart2;
 	uint8_t SatelliteErrorCode;
 
 	uint8_t AutonomoSeparationStatus = Permission_NOT;	 /*! if the value is 0 that means there is no separation permission else permission is OK*/
+	char ManuelSeparationCommand;	 					 /*! if the value is - that means there is no separation permission else (+) permission is OK*/
 
 	uint32_t SystemTick;   				 /*! All system units will be work together at 1Hz*/
 	uint32_t NumberOfTelePacket = 0;		 			 /*! The value is incremented by +1 at the end of each satellite operation period */

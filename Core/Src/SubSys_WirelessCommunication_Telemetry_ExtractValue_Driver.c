@@ -1,7 +1,7 @@
 
 #include "SubSys_WirelessCommunication_Telemetry_ExtractValue_Driver.h"
 
-void extractValues(const char* input, char* value1, char* value2) {
+void extractValues_Carrier(const char* input, char* value1, char* value2){
     const char* start = strchr(input, '<');
     if (start != NULL) {
         start++;  // '<' karakterinin sonrasına geç
@@ -33,5 +33,20 @@ void extractValues(const char* input, char* value1, char* value2) {
         value1[0] = '\0';  // İlk '<' bulunamazsa boş string döndür
         value2[0] = '\0';  // İkinci '<' ve '>' arasında veri yoksa boş string döndür
     }
+
+}
+
+void extractValues_GroundStation(const char* input, char* value3){
+	 const char* start = strchr(input, '<');					/*! input dizisi içinde İlk '<' karakterini bul ve adresini sakla*/
+	 if (start != NULL) {										/*! Eğer başlangıç adresi NULL dan farklıysa bu dizide veri var anlamına geliyor*/
+		 start+=8;  											/*! '<' karakterinin sonrasına geç adresini +1byte arttırmayı sağlıyor  */
+		 const char* end = strchr(start, '>');					/*! Start adresinden itibaren ilk '>' verisine ulaş ve onun adresini al */
+		 if (end != NULL) {										/*! Bitiş adresi de NULL karakterden farklıysa burada da veri var		*/
+			 size_t length = end - start;  						/*! İlk '<' ve '>' arasındaki uzunluğu al 1byte*length olmuş olcak 		*/
+			 strncpy(value3, start, length);  					/*! Start dizisinden Value3 dizisine lenght kadarını kopyala	*/
+			 value3[length] = '\0';  							/*! Null karakter ekle dizinin sonuna										*/
+		 }
+
+	 }
 
 }
