@@ -42,7 +42,7 @@ void SubSys_WirelessCom_Telemetry_Transfer_From_To(MissionUnit From_X, MissionUn
 
 				/* 8 pairs of '<>' and y Byte data are x Byte as total budget*/
 				Written_Bytes = sprintf(dev_WirelessComApp->Buffer.Temp,
-									   "<%u><%d><%d>,<%d/%d/%d:%d/%d/%d>,<%.2f><%.2f><%.2f><%.2f><%.2f><%.2f><%.2f><%.2f><%.6f><%.6f><%.2f><%.2f><%.2f><%.2f><%c,%c,%c,%c><%.2f><%u>\n",
+									   "<%u>,<%d>,<%d>,<%d/%d/%d,%d/%d/%d>,<%.2f>,<%.2f>,<%.2f>,<%.2f>,<%.2f>,<%.2f>,<%.2f>,<%.2f>,<%.6f>,<%.6f>,<%.2f>,<%.2f>,<%.2f>,<%.2f>,<%c%c%c%c>,<%.2f>,<%u>\n",
 																		 dev_WirelessComApp->Variable.PAY_NumOfPacket,
 																		 dev_WirelessComApp->Variable.PAY_SatelliteStatus,
 																		 dev_WirelessComApp->Variable.PAY_SatelliteErrorCode,
@@ -222,6 +222,7 @@ void SubSys_WirelessCom_Telemetry_Receive_From_To(MissionUnit From_X, MissionUni
 						GroundStation_IOTTemparature = atof(value3);
 
 					}
+
 
 					/*! Contanie to receive data from carrier unit or ground station.
 					 *  Good news and bad news, all of them can be filled but the order of the data can be stuck

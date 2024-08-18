@@ -307,7 +307,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   /******>>> SENSOR BATTERY INIT BEGIN >>>******/
-  	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_BATTERY_H__CLOSED
+  	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_BATTERY_H
   	NumSerialBat = 2;	/*! Number of serial connection battery */
   	MeasBattery_Init(NumSerialBat);
   	#endif
@@ -325,7 +325,7 @@ int main(void)
 
 
   /******>>> ALERT CONTROL INITIALIZATION BEGIN >>>******/
-	#ifdef SAT_PAYLOAD_SUBSYS_DRIVER_ALERTCONTROL_H__CLOSED
+	#ifdef SAT_PAYLOAD_SUBSYS_DRIVER_ALERTCONTROL_H
 	/**!
 	 * @Attention!
 	 *
@@ -345,7 +345,7 @@ int main(void)
 
 
   /******>>> SD CARD INITIALIZATION BEGIN >>>******/
-	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SDCARD_H__CLOSED
+	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SDCARD_H
 	/*! We create a buffer that contains the satellite's variables, and we fill it with variables from SD_Data objects */
 	extern char SdDatasBuf[LineSize];
 
@@ -425,7 +425,7 @@ int main(void)
 
 
 	/******>>> SERVO SYSTEM INITIALIZATION BEGIN >>>******/
-#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_ACTUATOR_SERVO_H__CLOSED
+#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_ACTUATOR_SERVO_H
 
 	/*! Separation system Servo control parameters*/
 	dev_Servo_Separation.htim_X 		= &htim1;
@@ -459,13 +459,13 @@ int main(void)
 
 
 	/******>>> RTC SYSTEM INITIALIZATION BEGIN >>>******/
-	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_RTC_H__CLOSED
+	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_RTC_H_
 
 		/*! Config i2c terminal and start the RTC */
 		DS1307_Init(&hi2c3);
 
 		/*! The code block required to set the date and time.*/
-		#ifdef SAT_PAYLOAD_RTC_CONFIG_PERMISSION_HEADERGUARD__CLOSED
+		#ifdef SAT_PAYLOAD_RTC_CONFIG_PERMISSION_HEADERGUARD
 		DS1307_SetTimeZone(+3, 00);
 		DS1307_SetDate(5);
 		DS1307_SetMonth(7);
@@ -480,7 +480,7 @@ int main(void)
 
 
 	/******>>> SEPARATION CONTROL INITIALIZATION BEGIN >>>******/
-	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SEPARATION_CONTROL_H__CLOSED
+	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SEPARATION_CONTROL_H
 		HAL_Delay(5000);
 		SubSys_SeparationMechanism_Lock_PayloadToCarrier();
 	#endif
@@ -488,7 +488,7 @@ int main(void)
 
 
 	/******>>> COLOR FILTER CONTROL INITIALIZATION BEGIN >>>******/
-	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_COLORFILTER_CONTROL_H__CLOSED
+	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_COLORFILTER_CONTROL_H
 		/*! Will be added init code block in here */
 		SubSys_ColorFilterMechanism_TurnTo(Filter_None);
 
