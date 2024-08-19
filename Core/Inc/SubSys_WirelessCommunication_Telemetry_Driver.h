@@ -153,8 +153,8 @@ typedef struct{
 
 typedef struct{
 	uint8_t Tx[SizeOf_Wireless_TX_Buff_PAYLOAD];	 /*! Buffer for Datas that send to Lora 	 */
-	char 	Temp[SizeOf_Wireless_TX_Buff_PAYLOAD];	 /*! Buffer for Datas that send to Lora		 */
-	char	 Rx[SizeOf_Wireless_RX_Buff_CARRIER];	 /*! Buffer for Datas that receive from Lora */
+	uint8_t  	Temp[SizeOf_Wireless_TX_Buff_PAYLOAD];	 /*! Buffer for Datas that send to Lora		 */
+	uint8_t	 Rx[SizeOf_Wireless_RX_Buff_CARRIER];	 /*! Buffer for Datas that receive from Lora */
 }SubSys_WirelessCom_BufferTypeDef;
 
 typedef struct{

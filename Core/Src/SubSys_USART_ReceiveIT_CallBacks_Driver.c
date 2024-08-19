@@ -10,11 +10,13 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	if(huart->Instance == USART2){
 		SubSys_WirelessCom_Telemetry_Receive_From_To(Sat_Carrier, Sat_Payload, &dev_WirelessComApp);
 	}
+
+	/*!
+	 * USART1 is for GPS
+	 */
 	if(huart->Instance == USART1){
 		GPS_UART_CallBack();
 	}
-
-
 
 
 }

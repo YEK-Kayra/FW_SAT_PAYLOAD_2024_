@@ -307,7 +307,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   /******>>> SENSOR BATTERY INIT BEGIN >>>******/
-  	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_BATTERY_H
+  	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_BATTERY_H__CLOSED
   	NumSerialBat = 2;	/*! Number of serial connection battery */
   	MeasBattery_Init(NumSerialBat);
   	#endif
@@ -325,7 +325,7 @@ int main(void)
 
 
   /******>>> ALERT CONTROL INITIALIZATION BEGIN >>>******/
-	#ifdef SAT_PAYLOAD_SUBSYS_DRIVER_ALERTCONTROL_H
+	#ifdef SAT_PAYLOAD_SUBSYS_DRIVER_ALERTCONTROL_H__CLOSED
 	/**!
 	 * @Attention!
 	 *
@@ -345,7 +345,7 @@ int main(void)
 
 
   /******>>> SD CARD INITIALIZATION BEGIN >>>******/
-	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SDCARD_H
+	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SDCARD_H__CLOSED
 	/*! We create a buffer that contains the satellite's variables, and we fill it with variables from SD_Data objects */
 	extern char SdDatasBuf[LineSize];
 
@@ -367,7 +367,7 @@ int main(void)
 
 
   /******>>> SENSOR GPS INITIALIZATION BEGIN >>>******/
-	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_GPS_H
+	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_GPS_H__CLOSED
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_SET);
 	GPS_Init();
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_RESET);
@@ -394,7 +394,7 @@ int main(void)
 	 SubSys_WirelessCom_Config_Init(&dev_WirelessComConfig);
 	 #endif
 
-	 #ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_WIRELESSCOMMUNICATION_TELEMETRY_H
+	 #ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_WIRELESSCOMMUNICATION_TELEMETRY_H__CLOSED
 	 /*! Will be filled for your dev that use now*/
 	 dev_WirelessComApp.huartX = &huart2;
 	 dev_WirelessComConfig.Mode_SW = NormalMode; 		/*! UART and wireless channel are open, transparent transmission is on*/
@@ -414,7 +414,7 @@ int main(void)
 
 
   /******>>> SENSOR IMU  INITIALIZATION BEGIN >>>******/
-	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_IMU_APP_H__notSuccesful
+	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_IMU_APP_H
 
 	 //*! BNO055 OR MPU9250 IMU SENSOR WİLL BE USED*//
 	bno055_assignI2C(&hi2c2);
@@ -425,7 +425,7 @@ int main(void)
 
 
 	/******>>> SERVO SYSTEM INITIALIZATION BEGIN >>>******/
-#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_ACTUATOR_SERVO_H
+#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_ACTUATOR_SERVO_H__CLOSED
 
 	/*! Separation system Servo control parameters*/
 	dev_Servo_Separation.htim_X 		= &htim1;
@@ -459,7 +459,7 @@ int main(void)
 
 
 	/******>>> RTC SYSTEM INITIALIZATION BEGIN >>>******/
-	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_RTC_H_
+	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_RTC_H___CLOSED
 
 		/*! Config i2c terminal and start the RTC */
 		DS1307_Init(&hi2c3);
@@ -480,7 +480,7 @@ int main(void)
 
 
 	/******>>> SEPARATION CONTROL INITIALIZATION BEGIN >>>******/
-	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SEPARATION_CONTROL_H
+	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SEPARATION_CONTROL_H__CLOSED
 		HAL_Delay(5000);
 		SubSys_SeparationMechanism_Lock_PayloadToCarrier();
 	#endif
@@ -488,7 +488,7 @@ int main(void)
 
 
 	/******>>> COLOR FILTER CONTROL INITIALIZATION BEGIN >>>******/
-	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_COLORFILTER_CONTROL_H
+	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_COLORFILTER_CONTROL_H__CLOSED
 		/*! Will be added init code block in here */
 		SubSys_ColorFilterMechanism_TurnTo(Filter_None);
 

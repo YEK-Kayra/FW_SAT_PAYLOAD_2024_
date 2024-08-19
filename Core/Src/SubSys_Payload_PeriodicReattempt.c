@@ -26,7 +26,7 @@ void SubSys_Payload_MissionRetryLoop(){
 	//ARAS_CheckSystem();
 
 	/*! Get the Roll, Pitch, and Yaw values from the IMU sensor variables. */
-	//IMU_GetEulerVector();
+	IMU_GetEulerVector();
 
 	/*! GPS datas will be getting at the background */
 
@@ -36,7 +36,7 @@ void SubSys_Payload_MissionRetryLoop(){
 	//SD_Write(SdDatasBuf, "SAT_PAY/STM32.TXT");
 
 	/*! Transfer all necessary datas from Carrier to Payload of Satellite*/
-	SubSys_WirelessCom_Telemetry_Transfer_From_To(Sat_Payload, GroundStation, &dev_WirelessComApp);
+	//SubSys_WirelessCom_Telemetry_Transfer_From_To(Sat_Payload, GroundStation, &dev_WirelessComApp);
 
 	NumberOfTelePacket++;
 
