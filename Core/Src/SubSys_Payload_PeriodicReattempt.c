@@ -26,7 +26,7 @@ void SubSys_Payload_MissionRetryLoop(){
 	//ARAS_CheckSystem();
 
 	/*! Get the Roll, Pitch, and Yaw values from the IMU sensor variables. */
-	IMU_GetEulerVector();
+	//IMU_GetEulerVector();
 
 	/*! GPS datas will be getting at the background */
 
