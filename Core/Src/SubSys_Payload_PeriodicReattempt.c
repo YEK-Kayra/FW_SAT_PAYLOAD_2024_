@@ -17,7 +17,7 @@ void SubSys_Payload_MissionRetryLoop(){
 	* (V) = Vertical Speed
 	* (H) = Vertical Height
 	**/
-	MS5611_Read_ActVal(&MS5611);
+	//MS5611_Read_ActVal(&MS5611);
 
 	/*! It reads the battery voltage and stores it */
 	//ReadBatteryVoltage(&hadc1);
@@ -26,7 +26,7 @@ void SubSys_Payload_MissionRetryLoop(){
 	//ARAS_CheckSystem();
 
 	/*! Get the Roll, Pitch, and Yaw values from the IMU sensor variables. */
-	//IMU_GetEulerVector();
+	IMU_GetEulerVector();
 
 	/*! GPS datas will be getting at the background */
 
@@ -41,7 +41,7 @@ void SubSys_Payload_MissionRetryLoop(){
 	NumberOfTelePacket++;
 
 	/*! The system time is retrieved again and the loop waits until the elapsed time reaches 1000 milliseconds*/
-	HAL_Delay(abs(1000 - (HAL_GetTick() - SystemTick)));
+	HAL_Delay(abs(100 - (HAL_GetTick() - SystemTick)));
 
 }
 

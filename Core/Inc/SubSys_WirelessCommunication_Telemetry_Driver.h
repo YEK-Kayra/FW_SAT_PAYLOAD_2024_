@@ -15,7 +15,7 @@
 
 /*! 200 is the number of packets the LoRa module can send in a single transmission */
 #define SizeOf_Wireless_TX_Buff_PAYLOAD 	200
-#define SizeOf_Wireless_RX_Buff_CARRIER 	30
+#define SizeOf_Wireless_RX_Buff_CARRIER 	27
 /******************************************************************************
          				#### WIRELESSCOM ENUMS ####
 ******************************************************************************/

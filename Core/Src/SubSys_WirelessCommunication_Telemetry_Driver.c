@@ -212,9 +212,10 @@ void SubSys_WirelessCom_Telemetry_Receive_From_To(MissionUnit From_X, MissionUni
 						 */
 						ManuelSeparationCommand = dev_WirelessComApp->Buffer.Rx[6];
 
-						if(ManuelSeparationCommand == '+'){
+						if(ManuelSeparationCommand == '$'){
 
 							SubSys_SeparationMechanism_UnLock_PayloadFromCarrier();
+							ManuelSeparationCommand = '-';
 
 						}
 

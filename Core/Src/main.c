@@ -320,7 +320,7 @@ int main(void)
 
 
   /******>>> SENSOR TPGVH INITIALIZATION BEGIN >>>******/
-  	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_TPGVH_H
+  	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_TPGVH_H__CLOSED
   	MS5611.I2C_ADDRESS = MS5611_I2C_ADDRESS_H;
   	MS5611.i2c = &hi2c1;
   	MS5611.Ref_Alt_Sel = 'm';
@@ -372,7 +372,7 @@ int main(void)
 
 
   /******>>> SENSOR GPS INITIALIZATION BEGIN >>>******/
-	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_GPS_H
+	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_GPS_H__CLOSED
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_SET);
 	GPS_Init();
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_RESET);
@@ -399,7 +399,7 @@ int main(void)
 	 SubSys_WirelessCom_Config_Init(&dev_WirelessComConfig);
 	 #endif
 
-	 #ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_WIRELESSCOMMUNICATION_TELEMETRY_H
+	 #ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_WIRELESSCOMMUNICATION_TELEMETRY_H__CLOSED
 	 /*! Will be filled for your dev that use now*/
 	 dev_WirelessComApp.huartX = &huart2;
 	 dev_WirelessComConfig.Mode_SW = NormalMode; 		/*! UART and wireless channel are open, transparent transmission is on*/
@@ -419,7 +419,7 @@ int main(void)
 
 
   /******>>> SENSOR IMU  INITIALIZATION BEGIN >>>******/
-	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_IMU_APP_H__CLOSED
+	#ifdef SAT_PAYLOAD_SUBSYS_DRIVERS_SENSOR_IMU_APP_H
 
 	 //*! BNO055 OR MPU9250 IMU SENSOR WİLL BE USED*//
 	bno055_assignI2C(&hi2c2);
