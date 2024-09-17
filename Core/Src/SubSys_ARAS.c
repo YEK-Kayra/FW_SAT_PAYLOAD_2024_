@@ -6,8 +6,6 @@ uint8_t total_err= 0;
 /* !Hata durumunun yazılacağı değişken tanımlanır Başlangıç <00000>*/
 
 
-
-
 void ARAS_CheckSystem()
 {
 
