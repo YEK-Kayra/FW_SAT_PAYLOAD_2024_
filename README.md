@@ -69,5 +69,3 @@ The firmware was developed using layered and modular design principles:
 /Services
 /Utilities
 /Docs
-
-::contentReference[oaicite:0]{index=0}
