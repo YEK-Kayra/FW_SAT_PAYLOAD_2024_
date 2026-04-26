@@ -63,7 +63,7 @@ The firmware was developed using layered and modular design principles:
 
 ## Repository Structure
 ```text
-/Core : Drivers are kept on the files
+/Core : Driver files are stored here.
 /Drivers
 /Application
 /Services
